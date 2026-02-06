@@ -50,15 +50,44 @@ export default function AnimatedLogo({
         path.style.strokeDasharray = `${len}`;
         path.style.strokeDashoffset = `${len}`;
       });
-      // Sort left-to-right by center X, split into left half (Cold) and right half (Culture)
-      strokePaths.sort((a, b) => {
-        const centerA = a.getBBox().x + a.getBBox().width / 2;
-        const centerB = b.getBBox().x + b.getBBox().width / 2;
-        return centerA - centerB;
+      // Calculate size and position for each path
+      const pathData = strokePaths.map((path, index) => {
+        const bbox = path.getBBox();
+        const area = bbox.width * bbox.height;
+        return {
+          path,
+          index,
+          centerX: bbox.x + bbox.width / 2,
+          area,
+          bbox
+        };
       });
-      const mid = Math.ceil(strokePaths.length / 2);
-      const leftPaths = strokePaths.slice(0, mid);
-      const rightPaths = strokePaths.slice(mid);
+      
+      // Sort by X position
+      pathData.sort((a, b) => a.centerX - b.centerX);
+      
+      // Split into left (Cold) and right (Culture) based on X position
+      const mid = Math.ceil(pathData.length / 2);
+      const leftPaths = pathData.slice(0, mid).map(d => d.path);
+      const rightData = pathData.slice(mid);
+      
+      // Debug: Log the Culture shapes with their areas
+      console.log('Culture shapes:', rightData.map(d => ({ 
+        index: d.index, 
+        area: Math.round(d.area),
+        width: Math.round(d.bbox.width),
+        height: Math.round(d.bbox.height)
+      })));
+      
+      // Sort Culture shapes by area (largest first, smallest accent last)
+      rightData.sort((a, b) => b.area - a.area);
+      const rightPaths = rightData.map(d => d.path);
+      
+      console.log('After sorting by area:', rightData.map(d => ({ 
+        index: d.index, 
+        area: Math.round(d.area)
+      })));
+      
       const staggerAmount = 0.08;
       // Draw left word first (Cold)
       tl.to(leftPaths, {
@@ -67,14 +96,14 @@ export default function AnimatedLogo({
         ease: "power2.inOut",
         stagger: { each: staggerAmount, from: "start" },
       });
-      // Then draw right word (Culture) - animated from right to left (reverse)
+      // Then draw right word (Culture) - largest shapes first, small accent last
       tl.to(
         rightPaths,
         {
           strokeDashoffset: 0,
           duration: strokeDuration * 0.6,
           ease: "power2.inOut",
-          stagger: { each: staggerAmount, from: "end" },
+          stagger: { each: staggerAmount, from: "start" },
         },
         "-=0.15"
       );

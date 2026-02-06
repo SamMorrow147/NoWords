@@ -41,9 +41,32 @@ export default function ScrollBackground({
       ease: "none",
     });
 
+    // Phase 2: slide background off to the left (faster than figure for parallax)
+    // This only fires when #section-two enters the viewport — well after phase 1 ends
+    const sectionTwo = document.getElementById("section-two");
+    let exitTl: gsap.core.Timeline | undefined;
+    if (sectionTwo) {
+      exitTl = gsap.timeline({
+        scrollTrigger: {
+          trigger: sectionTwo,
+          start: "top bottom",
+          end: "top top",
+          scrub: true,
+        },
+      });
+
+      exitTl.fromTo(
+        bg,
+        { x: 0 },
+        { x: -(window.innerWidth * 1.2), immediateRender: false, ease: "none" }
+      );
+    }
+
     return () => {
       tl.scrollTrigger?.kill();
       tl.kill();
+      exitTl?.scrollTrigger?.kill();
+      exitTl?.kill();
     };
   }, []);
 

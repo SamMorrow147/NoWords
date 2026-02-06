@@ -19,26 +19,45 @@ export default function FoggyCorner({
 
     gsap.set(fog, { opacity: 0 });
 
-    // Fade in when scrolling near bottom - slow and gradual
+    const section = fog.parentElement;
+
+    // Fade in after the figure settles, finish before text at 20%
+    // Fog fully in by ~700px; text triggers at 20% (~720px) so fog is in place first
     const tl = gsap.timeline({
       scrollTrigger: {
-        trigger: document.body,
-        start: "40% bottom",
-        end: "95% bottom",
-        scrub: 3,
-        toggleActions: "play none none reverse",
+        trigger: section ?? document.body,
+        start: "top top-=500",
+        end: "top top-=700",
+        scrub: 1,
       },
     });
 
     tl.to(fog, {
       opacity: 1,
-      duration: 1,
       ease: "power1.inOut",
     });
+
+    // Fade out later — after fog has had time to be visible
+    const sectionTwo = document.getElementById("section-two");
+    let exitTl: gsap.core.Timeline | undefined;
+    if (sectionTwo) {
+      exitTl = gsap.timeline({
+        scrollTrigger: {
+          trigger: sectionTwo,
+          start: "top 40%",
+          end: "top 15%",
+          scrub: true,
+        },
+      });
+
+      exitTl.to(fog, { opacity: 0, ease: "none" });
+    }
 
     return () => {
       tl.scrollTrigger?.kill();
       tl.kill();
+      exitTl?.scrollTrigger?.kill();
+      exitTl?.kill();
     };
   }, []);
 

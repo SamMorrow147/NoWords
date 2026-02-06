@@ -61,9 +61,32 @@ export default function ZoomFigure({
         ease: "none"
       }, 0);
 
+    // Phase 2: slide figure off to the left when scrolling into section 2
+    // This only fires when #section-two enters the viewport — well after phase 1 ends
+    const sectionTwo = document.getElementById("section-two");
+    let exitTl: gsap.core.Timeline | undefined;
+    if (sectionTwo) {
+      exitTl = gsap.timeline({
+        scrollTrigger: {
+          trigger: sectionTwo,
+          start: "top bottom",
+          end: "top top",
+          scrub: true,
+        },
+      });
+
+      exitTl.fromTo(
+        figure,
+        { x: endX },
+        { x: -600, immediateRender: false, ease: "none" }
+      );
+    }
+
     return () => {
       tl.scrollTrigger?.kill();
       tl.kill();
+      exitTl?.scrollTrigger?.kill();
+      exitTl?.kill();
     };
   }, []);
 
