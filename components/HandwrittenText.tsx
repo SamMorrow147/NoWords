@@ -17,6 +17,9 @@ export default function HandwrittenText() {
     const container = containerRef.current;
     if (!svg || !pattern || !container) return;
 
+    // Detect Safari for specific optimizations
+    const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+
     // Cache image element to avoid repeated DOM queries
     const image = pattern.querySelector("image");
     
@@ -26,15 +29,27 @@ export default function HandwrittenText() {
       const vw = window.innerWidth;
       const vh = window.innerHeight;
       
-      // Batch DOM writes together
-      pattern.setAttribute("x", `${-rect.left}`);
-      pattern.setAttribute("y", `${-rect.top}`);
-      pattern.setAttribute("width", `${vw}`);
-      pattern.setAttribute("height", `${vh}`);
-      
-      if (image) {
-        image.setAttribute("width", `${vw}`);
-        image.setAttribute("height", `${vh}`);
+      // Safari optimization: Use CSS transform instead of pattern manipulation when possible
+      if (isSafari) {
+        // Only update dimensions, not position (less work for Safari)
+        pattern.setAttribute("width", `${vw}`);
+        pattern.setAttribute("height", `${vh}`);
+        
+        if (image) {
+          image.setAttribute("width", `${vw}`);
+          image.setAttribute("height", `${vh}`);
+        }
+      } else {
+        // Chrome: Full pattern alignment
+        pattern.setAttribute("x", `${-rect.left}`);
+        pattern.setAttribute("y", `${-rect.top}`);
+        pattern.setAttribute("width", `${vw}`);
+        pattern.setAttribute("height", `${vh}`);
+        
+        if (image) {
+          image.setAttribute("width", `${vw}`);
+          image.setAttribute("height", `${vh}`);
+        }
       }
     };
 
@@ -61,8 +76,11 @@ export default function HandwrittenText() {
       gsap.set(container, { visibility: "visible" });
     });
     
-    // Only listen to resize - text is fixed position so no scroll updates needed!
-    window.addEventListener("resize", handleResize, { passive: true });
+    // Safari: Skip resize listener to reduce performance overhead
+    // Pattern is close enough without updates
+    if (!isSafari) {
+      window.addEventListener("resize", handleResize, { passive: true });
+    }
 
     const maskPaths = Array.from(svg.querySelectorAll<SVGPathElement>(".mask-path"));
 
@@ -71,6 +89,12 @@ export default function HandwrittenText() {
       const len = path.getTotalLength();
       path.style.strokeDasharray = `${len}`;
       path.style.strokeDashoffset = `${len}`;
+      
+      // Safari optimization: Force GPU acceleration for each path
+      if (isSafari) {
+        path.style.willChange = "stroke-dashoffset";
+        path.style.transform = "translateZ(0)";
+      }
     });
 
     gsap.set(svg, { opacity: 0 });
@@ -127,7 +151,9 @@ export default function HandwrittenText() {
     });
 
     return () => {
-      window.removeEventListener("resize", handleResize);
+      if (!isSafari) {
+        window.removeEventListener("resize", handleResize);
+      }
       if (resizeRaf) cancelAnimationFrame(resizeRaf);
       tl.scrollTrigger?.kill();
       fadeOutTrigger.kill();
@@ -142,6 +168,8 @@ export default function HandwrittenText() {
       style={{
         willChange: "opacity",
         transform: "translateZ(0)", // Force GPU layer
+        backfaceVisibility: "hidden" as const,
+        WebkitBackfaceVisibility: "hidden",
       }}
     >
       <svg
@@ -150,8 +178,9 @@ export default function HandwrittenText() {
         viewBox="0 0 76.02 54.85"
         className="w-56 md:w-80 lg:w-96"
         style={{
-          transform: "rotate(5deg)",
+          transform: "rotate(5deg) translateZ(0)",
           filter: "drop-shadow(3px 3px 6px rgba(0,0,0,0.5))",
+          WebkitTransform: "rotate(5deg) translateZ(0)",
         }}
       >
         <defs>
