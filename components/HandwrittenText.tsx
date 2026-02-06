@@ -17,25 +17,35 @@ export default function HandwrittenText() {
     const container = containerRef.current;
     if (!svg || !pattern || !container) return;
 
+    // Cache image element to avoid repeated DOM queries
+    const image = pattern.querySelector("image");
+    
     // Calculate pattern offset and size to align with page background
     const updatePatternPosition = () => {
       const rect = svg.getBoundingClientRect();
       const vw = window.innerWidth;
       const vh = window.innerHeight;
       
-      // Offset pattern to align with viewport background
+      // Batch DOM writes together
       pattern.setAttribute("x", `${-rect.left}`);
       pattern.setAttribute("y", `${-rect.top}`);
-      
-      // Safari fix: Use pixel values instead of viewport units
       pattern.setAttribute("width", `${vw}`);
       pattern.setAttribute("height", `${vh}`);
       
-      const image = pattern.querySelector("image");
       if (image) {
         image.setAttribute("width", `${vw}`);
         image.setAttribute("height", `${vh}`);
       }
+    };
+
+    // Throttled resize handler using RAF
+    let resizeRaf: number | null = null;
+    const handleResize = () => {
+      if (resizeRaf) return; // Already scheduled
+      resizeRaf = requestAnimationFrame(() => {
+        updatePatternPosition();
+        resizeRaf = null;
+      });
     };
 
     // Hide container initially to prevent glitchy load
@@ -51,8 +61,8 @@ export default function HandwrittenText() {
       gsap.set(container, { visibility: "visible" });
     });
     
-    window.addEventListener("resize", updatePatternPosition);
-    window.addEventListener("scroll", updatePatternPosition);
+    // Only listen to resize - text is fixed position so no scroll updates needed!
+    window.addEventListener("resize", handleResize, { passive: true });
 
     const maskPaths = Array.from(svg.querySelectorAll<SVGPathElement>(".mask-path"));
 
@@ -117,8 +127,8 @@ export default function HandwrittenText() {
     });
 
     return () => {
-      window.removeEventListener("resize", updatePatternPosition);
-      window.removeEventListener("scroll", updatePatternPosition);
+      window.removeEventListener("resize", handleResize);
+      if (resizeRaf) cancelAnimationFrame(resizeRaf);
       tl.scrollTrigger?.kill();
       fadeOutTrigger.kill();
       tl.kill();
@@ -126,7 +136,14 @@ export default function HandwrittenText() {
   }, []);
 
   return (
-    <div ref={containerRef} className="fixed bottom-12 left-12 z-40 pointer-events-none">
+    <div 
+      ref={containerRef} 
+      className="fixed bottom-12 left-12 z-40 pointer-events-none"
+      style={{
+        willChange: "opacity",
+        transform: "translateZ(0)", // Force GPU layer
+      }}
+    >
       <svg
         ref={svgRef}
         xmlns="http://www.w3.org/2000/svg"
