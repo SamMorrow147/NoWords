@@ -44,6 +44,8 @@ export default function HandwrittenText() {
         trigger: document.body,
         start: "85% bottom",
         toggleActions: "play reset play reset",
+        markers: false, // Set to true for debugging
+        id: "handwriting",
       },
     });
 

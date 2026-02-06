@@ -65,7 +65,7 @@ export default function Home() {
         <HandwrittenText />
       </section>
       {/* Spacer so the page is scrollable; replace with your content (e.g. CollectionSection) */}
-      <div className="min-h-screen" aria-hidden />
+      <div className="h-[150vh]" aria-hidden />
     </div>
   );
 }

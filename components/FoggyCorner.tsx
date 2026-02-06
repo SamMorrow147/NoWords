@@ -23,9 +23,9 @@ export default function FoggyCorner({
     const tl = gsap.timeline({
       scrollTrigger: {
         trigger: document.body,
-        start: "50% bottom",
-        end: "90% bottom",
-        scrub: 1,
+        start: "40% bottom",
+        end: "95% bottom",
+        scrub: 3,
         toggleActions: "play none none reverse",
       },
     });
