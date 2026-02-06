@@ -15,12 +15,25 @@ export default function HandwrittenText() {
     const pattern = patternRef.current;
     if (!svg || !pattern) return;
 
-    // Calculate pattern offset to align with page background
+    // Calculate pattern offset and size to align with page background
     const updatePatternPosition = () => {
       const rect = svg.getBoundingClientRect();
+      const vw = window.innerWidth;
+      const vh = window.innerHeight;
+      
       // Offset pattern to align with viewport background
       pattern.setAttribute("x", `${-rect.left}`);
       pattern.setAttribute("y", `${-rect.top}`);
+      
+      // Safari fix: Use pixel values instead of viewport units
+      pattern.setAttribute("width", `${vw}`);
+      pattern.setAttribute("height", `${vh}`);
+      
+      const image = pattern.querySelector("image");
+      if (image) {
+        image.setAttribute("width", `${vw}`);
+        image.setAttribute("height", `${vh}`);
+      }
     };
 
     updatePatternPosition();
@@ -111,14 +124,14 @@ export default function HandwrittenText() {
         }}
       >
         <defs>
-          {/* Pattern to fill text with the clear background image - sized to viewport */}
-          <pattern ref={patternRef} id="clear-bg-pattern" x="0" y="0" width="100vw" height="100vh" patternUnits="userSpaceOnUse">
+          {/* Pattern to fill text with the clear background image - Safari compatible */}
+          <pattern ref={patternRef} id="clear-bg-pattern" x="0" y="0" width="1920" height="1080" patternUnits="userSpaceOnUse">
             <image 
               href="/Heroimage.png" 
               x="0" 
               y="0" 
-              width="100vw" 
-              height="100vh" 
+              width="1920" 
+              height="1080" 
               preserveAspectRatio="xMidYMid slice"
             />
           </pattern>
