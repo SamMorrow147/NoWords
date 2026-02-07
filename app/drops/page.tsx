@@ -66,6 +66,7 @@ export default function DropsPage() {
     /* ── Activate card ── */
     function activate(index: number) {
       if (activeRef.current !== null) return;
+      if (!panel) return;
       const item = itemEls.current[index];
       if (!item) return;
 
@@ -133,7 +134,7 @@ export default function DropsPage() {
     /* ── Deactivate card ── */
     function deactivate() {
       const idx = activeRef.current;
-      if (idx === null) return;
+      if (idx === null || !panel) return;
       const item = itemEls.current[idx];
       const spacer = spacerRef.current;
       if (!item || !spacer) return;
