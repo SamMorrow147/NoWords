@@ -37,15 +37,20 @@ export default function SectionFourText() {
     };
   }, []);
 
+  const textStyle = {
+    fontFamily: "'Abject Failure', sans-serif",
+    fontSize: "clamp(4rem, 15vw, 12rem)",
+    fontWeight: 600,
+    transform: "translateZ(0) rotate(-4deg)",
+  };
+
   return (
     <div
       ref={textRef}
       className="fixed inset-0 flex items-end justify-center pb-[8vh] xl:pb-[3vh] z-[3] pointer-events-none"
       style={{
         opacity: 0,
-        fontFamily: "'Abject Failure', sans-serif",
-        fontSize: "clamp(4rem, 15vw, 12rem)",
-        fontWeight: 600,
+        ...textStyle,
         backgroundImage: `url(${SECTION_FOUR_IMAGE})`,
         backgroundSize: "cover",
         backgroundPosition: "center",
@@ -53,15 +58,48 @@ export default function SectionFourText() {
         WebkitBackgroundClip: "text",
         color: "transparent",
         WebkitTextFillColor: "transparent",
-        transform: "translateZ(0) rotate(-4deg)",
       }}
     >
       <Link
         href="/drops"
-        className="pointer-events-auto cursor-pointer"
+        className="pointer-events-auto cursor-pointer flex items-end gap-[0.12em]"
         aria-label="View latest drops"
       >
-        latest drops
+        <span className="relative inline-block" style={textStyle}>
+          latest drops
+          {/* Darken the image inside the text */}
+          <span
+            className="absolute top-0 left-0 pointer-events-none"
+            style={{
+              ...textStyle,
+              background: "rgba(0, 0, 0, 0.45)",
+              backgroundClip: "text",
+              WebkitBackgroundClip: "text",
+              color: "transparent",
+              WebkitTextFillColor: "transparent",
+            }}
+            aria-hidden
+          >
+            latest drops
+          </span>
+        </span>
+        <span className="relative inline-block" style={textStyle}>
+          &gt;
+          <span
+            className="absolute top-0 left-0 pointer-events-none"
+            style={{
+              ...textStyle,
+              background: "rgba(0, 0, 0, 0.45)",
+              backgroundClip: "text",
+              WebkitBackgroundClip: "text",
+              color: "transparent",
+              WebkitTextFillColor: "transparent",
+            }}
+            aria-hidden
+          >
+            &gt;
+          </span>
+        </span>
       </Link>
     </div>
   );

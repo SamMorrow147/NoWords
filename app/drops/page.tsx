@@ -7,16 +7,17 @@ import { Draggable } from "gsap/Draggable";
 gsap.registerPlugin(Draggable);
 
 const ITEMS = [
-  { img: "/T-T-CC copy.png", title: "MN Knux T", price: "$ 40.00" },
-  { img: "/P-T-CC.png", title: "MN Knux T", price: "$ 40.00" },
-  { img: "/KnuxKeychain.png", title: "Knux Keychain", price: "$ 40.00" },
-  { img: "/KnuckNecklace.png", title: "Knux Necklace", price: "$ 40.00" },
-  { img: "/Knuxearings.png", title: "Knux Earrings", price: "$ 40.00" },
-  { img: "/HOTC-Sticker-min.png", title: "Heart of the City Sticker V1", price: "$ 40.00" },
+  { img: "/T-T-CC copy.png", title: "MN Knux T", price: "$ 40" },
+  { img: "/P-T-CC.png", title: "MN Knux T", price: "$ 40" },
+  { img: "/KnuxKeychain.png", title: "Knux Keychain", price: "$ 40" },
+  { img: "/KnuckNecklace.png", title: "Knux Necklace", price: "$ 40" },
+  { img: "/Knuxearings.png", title: "Knux Earrings", price: "$ 40" },
+  { img: "/freepik__minimal-soft-studio-light-photography-this-tank-to__85476.png", title: "CC Tank", price: "$ 40" },
+  { img: "/HOTC-Sticker-min.png", title: "Heart of the City", price: "$ 40" },
 ];
 
 const BGS = [
-  "/HOTC-Sticker-min.png",
+  "/freepik__can-you-give-me-an-close-up-image-of-this-small-5-__41049.png",
   "/freepik__a-product-shot-of-earrings-on-a-beautiful-ethnic-w__60530.png",
   "/freepik__dramatic-close-up-of-her-shirt-in-a-winter-storm-v__35142.png",
 ];
@@ -40,21 +41,43 @@ export default function DropsPage() {
     if (bgs[1]) gsap.set(bgs[1], { scale: 2, opacity: 0 });
     if (bgs[2]) gsap.set(bgs[2], { scale: 1, opacity: 1 });
 
-    /* ── Snap points ── */
-    const cardW = cards.scrollWidth;
+    /* ── Per-card snap points ── */
+    const cardEls = Array.from(cards.children) as HTMLElement[];
     const panelW = panel.offsetWidth;
-    const maxDrag = Math.min(0, -(cardW - panelW + 40));
-    const snapPoints = [0, maxDrag / 2, maxDrag];
 
-    function switchBg(dragX: number) {
-      const nearest = snapPoints.reduce(
+    function calcSnapPoints() {
+      const pts: number[] = [];
+      for (let i = 0; i < cardEls.length; i++) {
+        // Snap position centers each card in the viewport
+        const cardLeft = cardEls[i].offsetLeft;
+        const cardWidth = cardEls[i].offsetWidth;
+        const centerOffset = -(cardLeft - (panelW - cardWidth) / 2);
+        pts.push(centerOffset);
+      }
+      return pts;
+    }
+
+    let snapPoints = calcSnapPoints();
+
+    function getActiveSnapIndex(dragX: number) {
+      return snapPoints.reduce(
         (best, _p, i) =>
           Math.abs(dragX - snapPoints[i]) < Math.abs(dragX - snapPoints[best])
             ? i
             : best,
         0
       );
-      const bgIdx = [2, 1, 0][nearest];
+    }
+
+    function switchBg(cardIdx: number) {
+      // Map card index to one of the 3 backgrounds
+      // First third → bg 2, middle third → bg 1, last third → bg 0
+      const total = cardEls.length;
+      let bgIdx: number;
+      if (cardIdx < total / 3) bgIdx = 2;
+      else if (cardIdx < (2 * total) / 3) bgIdx = 1;
+      else bgIdx = 0;
+
       gsap.to(bgs, {
         scale: (i: number) => (i === bgIdx ? 1 : 2),
         opacity: (i: number) => (i === bgIdx ? 1 : 0),
@@ -100,9 +123,11 @@ export default function DropsPage() {
 
       const img = item.querySelector(".item-img") as HTMLElement;
       const desc = item.querySelector(".item-description") as HTMLElement;
+      const price = item.querySelector(".item-price") as HTMLElement;
+      const buyBtn = item.querySelector(".item-buy-btn") as HTMLElement;
 
       // Animate card to expanded bottom strip
-      const expandedHeight = 320;
+      const expandedHeight = 420;
       const finalTop = panelRect.height - expandedHeight;
       const tl = gsap.timeline({ defaults: { duration: 0.5, ease: "power2.inOut" } });
 
@@ -131,14 +156,24 @@ export default function DropsPage() {
           xPercent: -50,
         });
         tl.to(img, {
-          bottom: 160,
+          bottom: 220,
         }, 0);
       }
 
       if (desc) {
         tl.to(desc, {
-          bottom: 60,
+          bottom: 130,
         }, 0);
+      }
+
+      // Reveal price + button with a staggered fade-in
+      if (price) {
+        gsap.set(price, { display: "block", opacity: 0 });
+        tl.to(price, { opacity: 1, duration: 0.3, ease: "power2.out" }, 0.25);
+      }
+      if (buyBtn) {
+        gsap.set(buyBtn, { display: "block", opacity: 0 });
+        tl.to(buyBtn, { opacity: 1, duration: 0.3, ease: "power2.out" }, 0.35);
       }
     }
 
@@ -157,8 +192,18 @@ export default function DropsPage() {
 
       const img = item.querySelector(".item-img") as HTMLElement;
       const desc = item.querySelector(".item-description") as HTMLElement;
+      const price = item.querySelector(".item-price") as HTMLElement;
+      const buyBtn = item.querySelector(".item-buy-btn") as HTMLElement;
 
       const tl = gsap.timeline({ defaults: { duration: 0.5, ease: "power2.inOut" } });
+
+      // Fade out price + button immediately
+      if (price) {
+        tl.to(price, { opacity: 0, duration: 0.2, ease: "power2.in" }, 0);
+      }
+      if (buyBtn) {
+        tl.to(buyBtn, { opacity: 0, duration: 0.2, ease: "power2.in" }, 0);
+      }
 
       tl.to(item, {
         top: spacerRect.top - panelRect.top,
@@ -172,6 +217,8 @@ export default function DropsPage() {
           gsap.set(item, { clearProps: "all" });
           if (img) gsap.set(img, { clearProps: "all" });
           if (desc) gsap.set(desc, { clearProps: "all" });
+          if (price) gsap.set(price, { clearProps: "all" });
+          if (buyBtn) gsap.set(buyBtn, { clearProps: "all" });
           spacer.parentNode?.insertBefore(item, spacer);
           spacer.parentNode?.removeChild(spacer);
           spacerRef.current = null;
@@ -194,12 +241,16 @@ export default function DropsPage() {
 
     /* ── GSAP Draggable ── */
     let wasDragging = false;
+    let currentSnapIdx = 0;
+
+    const minSnap = snapPoints[snapPoints.length - 1];
+    const maxSnap = snapPoints[0];
 
     const [draggable] = Draggable.create(cards, {
       type: "x",
       trigger: panel,
       edgeResistance: 0.65,
-      bounds: { minX: maxDrag, maxX: 0 },
+      bounds: { minX: minSnap - 40, maxX: maxSnap + 40 },
       zIndexBoost: false,
       allowContextMenu: false,
       minimumMovement: 6,
@@ -208,15 +259,14 @@ export default function DropsPage() {
       },
       onDragEnd() {
         const x = this.x;
-        const nearest = snapPoints.reduce((best, pos) =>
-          Math.abs(x - pos) < Math.abs(x - best) ? pos : best
-        );
+        const nearestIdx = getActiveSnapIndex(x);
+        currentSnapIdx = nearestIdx;
         gsap.to(cards, {
-          x: nearest,
+          x: snapPoints[nearestIdx],
           duration: 0.4,
           ease: "power2.out",
         });
-        switchBg(nearest);
+        switchBg(nearestIdx);
         // Reset drag flag after a tick so the click event that follows is suppressed
         setTimeout(() => { wasDragging = false; }, 80);
       },
@@ -231,6 +281,9 @@ export default function DropsPage() {
       if (!card) return;
       const idx = itemEls.current.indexOf(card);
       if (idx < 0) return;
+
+      // Sold out cards don't open
+      if (card.classList.contains("drops-item-sold-out")) return;
 
       if (activeRef.current === idx) {
         deactivate();
@@ -256,14 +309,50 @@ export default function DropsPage() {
     }
     panel.addEventListener("click", handlePanelClick);
 
+    /* ── Mouse wheel scrolls through cards ── */
+    let wheelLocked = false;
+
+    function handleWheel(e: WheelEvent) {
+      e.preventDefault();
+      if (activeRef.current !== null) return; // ignore when a card is open
+      if (wheelLocked) return;
+
+      // Use deltaY (vertical scroll) or deltaX (horizontal scroll/trackpad)
+      const delta = Math.abs(e.deltaY) > Math.abs(e.deltaX) ? e.deltaY : e.deltaX;
+      if (Math.abs(delta) < 5) return;
+
+      if (delta > 0 && currentSnapIdx < snapPoints.length - 1) {
+        currentSnapIdx++;
+      } else if (delta < 0 && currentSnapIdx > 0) {
+        currentSnapIdx--;
+      } else {
+        return;
+      }
+
+      wheelLocked = true;
+      gsap.to(cards, {
+        x: snapPoints[currentSnapIdx],
+        duration: 0.5,
+        ease: "power2.out",
+        onComplete: () => {
+          draggable.update();
+          setTimeout(() => { wheelLocked = false; }, 150);
+        },
+      });
+      switchBg(currentSnapIdx);
+    }
+
+    panel.addEventListener("wheel", handleWheel, { passive: false });
+
     /* ── Resize handler ── */
     const handleResize = () => {
-      const newPanelW = panel.offsetWidth;
-      const newCardW = cards.scrollWidth;
-      const newMax = Math.min(0, -(newCardW - newPanelW + 40));
-      draggable.applyBounds({ minX: newMax, maxX: 0 });
-      snapPoints[1] = newMax / 2;
-      snapPoints[2] = newMax;
+      snapPoints = calcSnapPoints();
+      const newMin = snapPoints[snapPoints.length - 1];
+      const newMax = snapPoints[0];
+      draggable.applyBounds({ minX: newMin - 40, maxX: newMax + 40 });
+      // Re-snap to nearest card after resize
+      const nearestIdx = getActiveSnapIndex(draggable.x);
+      gsap.to(cards, { x: snapPoints[nearestIdx], duration: 0.3 });
     };
     window.addEventListener("resize", handleResize);
 
@@ -274,6 +363,7 @@ export default function DropsPage() {
         el?.removeEventListener("click", handleCardClick as EventListener);
       });
       panel.removeEventListener("click", handlePanelClick);
+      panel.removeEventListener("wheel", handleWheel);
     };
   }, []);
 
@@ -329,32 +419,31 @@ export default function DropsPage() {
         {/* Card list – GSAP Draggable moves this via transform */}
         <div
           ref={cardsRef}
-          className="drops-card-list absolute bottom-8 left-3 flex gap-3 md:gap-5 lg:gap-6 z-10 overflow-visible"
+          className="drops-card-list absolute bottom-8 left-0 flex gap-3 md:gap-5 lg:gap-6 z-10 overflow-visible px-[12.5vw] md:px-3"
         >
           {ITEMS.map((product, index) => (
             <div
               key={index}
               ref={(el) => { itemEls.current[index] = el; }}
-              className="drops-item drops-item-foggy drops-card relative w-[170px] h-[200px] md:w-[260px] md:h-[260px] lg:w-[300px] lg:h-[280px] rounded-xl flex-shrink-0 cursor-pointer shadow-lg overflow-visible"
+              className={`drops-item drops-item-foggy drops-card relative w-[75vw] h-[220px] md:w-[260px] md:h-[260px] lg:w-[300px] lg:h-[280px] rounded-xl flex-shrink-0 shadow-lg overflow-visible ${index >= 5 ? "drops-item-sold-out cursor-not-allowed" : "cursor-pointer"}`}
             >
               <img
-                className={`item-img absolute inset-x-0 bottom-[72px] w-full object-contain object-bottom pointer-events-none ${index < 2 ? "scale-[1.65] origin-bottom" : ""}`}
+                className={`item-img absolute inset-x-0 bottom-[72px] w-full object-contain object-bottom ${index < 2 ? "scale-[1.65] origin-bottom" : ""}`}
                 src={product.img}
                 alt={product.title.replace("\n", " ")}
                 draggable={false}
               />
               {index >= 5 && (
                 <span
-                  className="absolute left-1/2 top-[12%] -translate-x-1/2 -translate-y-1/2 -rotate-[25deg] flex flex-col items-center justify-center text-red-600 font-bold pointer-events-none select-none text-5xl md:text-6xl lg:text-7xl xl:text-8xl leading-tight"
+                  className="absolute left-1/2 top-[12%] -translate-x-1/2 -translate-y-1/2 -rotate-[25deg] flex flex-col items-center justify-center text-red-600/50 font-bold pointer-events-none select-none text-6xl md:text-7xl lg:text-8xl xl:text-9xl leading-tight"
                   style={{ fontFamily: "'Abject Failure', sans-serif" }}
                   aria-hidden
                 >
-                  <span>SOLD</span>
-                  <span>OUT</span>
+                  Sold Out
                 </span>
               )}
-              <div className="item-description absolute bottom-0 inset-x-0 h-[72px] text-center w-full pointer-events-none flex flex-col justify-end">
-                <h2 className="uppercase px-3 pt-2 md:pt-3 text-xl md:text-2xl lg:text-3xl font-semibold leading-tight text-white" style={{ fontFamily: "'Abject Failure', sans-serif" }}>
+              <div className="item-description absolute bottom-0 inset-x-0 h-[72px] text-center w-full pointer-events-none flex flex-col justify-start pt-1">
+                <h2 className={`px-3 pt-2 md:pt-3 text-lg md:text-xl lg:text-2xl font-semibold leading-snug capitalize ${index >= 5 ? "text-gray-400" : "text-white"}`} style={{ fontFamily: "'Abject Failure', sans-serif" }}>
                   {product.title.split("\n").map((line, i) => (
                     <span key={i}>
                       {line}
@@ -362,9 +451,17 @@ export default function DropsPage() {
                     </span>
                   ))}
                 </h2>
-                <p className="item-price mt-1 md:mt-2 px-3 pb-2 md:pb-3 text-gray-300 text-sm font-sans">
+                <p className="item-price mt-3 md:mt-4 px-3 pb-2 md:pb-3 text-gray-300 text-sm font-sans">
                   {product.price}
                 </p>
+                {index < 5 && (
+                  <button
+                    className="item-buy-btn neon-glass-btn pointer-events-auto mx-auto"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    Buy Now
+                  </button>
+                )}
               </div>
             </div>
           ))}

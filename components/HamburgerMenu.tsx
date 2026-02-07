@@ -7,9 +7,6 @@ import "./HamburgerMenu.css";
 const NAV_LINKS = [
   { href: "/", label: "Home" },
   { href: "/drops", label: "Drops" },
-  { href: "#", label: "My Account" },
-  { href: "#", label: "Order Tracker" },
-  { href: "#", label: "Log Out" },
 ];
 
 export default function HamburgerMenu({

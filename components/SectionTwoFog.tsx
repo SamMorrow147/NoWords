@@ -3,7 +3,7 @@
 import { useEffect, useRef } from "react";
 
 const SECTION_TWO_IMAGE =
-  "/freepik__a-young-ethnic-woman-in-a-purple-shirt-and-winter-__60532.png";
+  "/freepik__at-night-city-lights-purples-and-yellow-light-cast__39381.png";
 
 export default function SectionTwoFog() {
   const fogRef = useRef<HTMLDivElement>(null);

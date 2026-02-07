@@ -74,7 +74,7 @@ export default function SectionTwoText() {
         transform: "translateZ(0)",
       }}
     >
-      You Betcha!
+      you BETcha!
     </div>
   );
 }

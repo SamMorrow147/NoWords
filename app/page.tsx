@@ -13,6 +13,8 @@ import SectionTwoFog from "@/components/SectionTwoFog";
 import SectionTwoText from "@/components/SectionTwoText";
 import SectionFourFog from "@/components/SectionFourFog";
 import SectionFourText from "@/components/SectionFourText";
+import SectionThreeFoggyCorner from "@/components/SectionThreeFoggyCorner";
+import SectionThreeText from "@/components/SectionThreeText";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -122,7 +124,7 @@ export default function Home() {
         ref={sectionTwoBgRef}
         className="fixed inset-0 w-full h-full bg-cover bg-center bg-no-repeat"
         style={{
-          backgroundImage: `url('/freepik__a-young-ethnic-woman-in-a-purple-shirt-and-winter-__60532.png')`,
+          backgroundImage: `url('/freepik__at-night-city-lights-purples-and-yellow-light-cast__39381.png')`,
           zIndex: 1,
           opacity: 0,
         }}
@@ -153,6 +155,9 @@ export default function Home() {
       {/* Section 2: fog along bottom + "You Betcha!" text */}
       <SectionTwoFog />
       <SectionTwoText />
+      {/* Section 3: circular fog on the right + "Shop Steel" text */}
+      <SectionThreeFoggyCorner />
+      <SectionThreeText />
       {/* Section 4: fog + "drop offs" text */}
       <SectionFourFog />
       <SectionFourText />
