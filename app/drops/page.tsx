@@ -7,18 +7,18 @@ import { Draggable } from "gsap/Draggable";
 gsap.registerPlugin(Draggable);
 
 const ITEMS = [
-  { img: "https://i.postimg.cc/qq3g4kRK/h1.png", title: "men's dickies\nlogo hoodie", price: "$ 40.00" },
-  { img: "https://i.postimg.cc/7LKVjyfD/h2.png", title: "men's dickies\nlogo hoodie", price: "$ 40.00" },
+  { img: "/T-T-CC copy.png", title: "MN Knux T", price: "$ 40.00" },
+  { img: "/P-T-CC.png", title: "MN Knux T", price: "$ 40.00" },
   { img: "https://i.postimg.cc/5NfXQQs7/h5.png", title: "men's dickies\nlogo hoodie", price: "$ 40.00" },
   { img: "https://i.postimg.cc/50qxfnWx/h6.png", title: "men's dickies\nlogo hoodie", price: "$ 40.00" },
   { img: "https://i.postimg.cc/3J2ZYGdt/h3.png", title: "men's dickies\nlogo hoodie", price: "$ 40.00" },
-  { img: "https://i.postimg.cc/jj1fzqDW/h4.png", title: "men's dickies\nlogo hoodie", price: "$ 40.00" },
+  { img: "/HOTC-Sticker-min.png", title: "men's dickies\nlogo hoodie", price: "$ 40.00" },
 ];
 
 const BGS = [
   "https://i.postimg.cc/y8y4gWrP/bg1.jpg",
   "https://i.postimg.cc/rmzvPjyn/bg2.jpg",
-  "https://i.postimg.cc/SsTVwb1C/bg5.jpg",
+  "/freepik__dramatic-close-up-of-her-shirt-in-a-winter-storm__35141.png",
 ];
 
 export default function DropsPage() {
@@ -279,8 +279,8 @@ export default function DropsPage() {
             className="absolute inset-0 w-full h-full"
             style={{
               backgroundImage: `url(${url})`,
-              backgroundSize: "cover",
-              backgroundPosition: "center",
+              backgroundSize: i === 2 ? "150%" : "cover",
+              backgroundPosition: i === 2 ? "center 65%" : "center",
               backgroundRepeat: "no-repeat",
             }}
           />
@@ -308,10 +308,6 @@ export default function DropsPage() {
           <p className="font-sans uppercase text-white text-sm tracking-wider">
             New SEASON - 020
           </p>
-          <hr className="border-white/40 my-3" />
-          <h1 className="font-[family-name:var(--font-krona)] text-white text-2xl md:text-3xl text-right leading-tight">
-            our<br />Hoodies<br />Collection
-          </h1>
         </aside>
 
         {/* Card list – GSAP Draggable moves this via transform */}
@@ -326,13 +322,23 @@ export default function DropsPage() {
               className="drops-item relative flex flex-col justify-center items-center w-[170px] h-[220px] md:w-[260px] md:h-[320px] lg:w-[300px] lg:h-[360px] rounded-xl bg-white flex-shrink-0 cursor-pointer shadow-lg"
             >
               <img
-                className="item-img absolute max-w-full h-auto bottom-[100px] md:bottom-[140px] lg:bottom-[160px] block pointer-events-none"
+                className={`item-img absolute max-w-full h-auto bottom-[100px] md:bottom-[140px] lg:bottom-[160px] block pointer-events-none ${index < 2 ? "scale-[1.65] origin-bottom" : ""}`}
                 src={product.img}
                 alt={product.title.replace("\n", " ")}
                 draggable={false}
               />
+              {index >= 2 && (
+                <span
+                  className="absolute left-1/2 top-[12%] flex flex-col items-center justify-center text-red-600 font-bold pointer-events-none select-none text-5xl md:text-6xl lg:text-7xl xl:text-8xl leading-tight"
+                  style={{ fontFamily: "'Abject Failure', sans-serif", transform: "translate(-50%, -50%) rotate(-25deg)" }}
+                  aria-hidden
+                >
+                  <span>SOLD</span>
+                  <span>OUT</span>
+                </span>
+              )}
               <div className="item-description absolute bottom-0 text-center w-full pointer-events-none">
-                <h2 className="uppercase px-4 pt-4 text-sm font-semibold leading-tight">
+                <h2 className="uppercase px-4 pt-4 text-sm font-semibold leading-tight text-[#1b001b]">
                   {product.title.split("\n").map((line, i) => (
                     <span key={i}>
                       {line}

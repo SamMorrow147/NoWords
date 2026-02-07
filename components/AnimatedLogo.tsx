@@ -70,23 +70,59 @@ export default function AnimatedLogo({
       const mid = Math.ceil(pathData.length / 2);
       const leftPaths = pathData.slice(0, mid).map(d => d.path);
       const rightData = pathData.slice(mid);
-      
-      // Debug: Log the Culture shapes with their areas
-      console.log('Culture shapes:', rightData.map(d => ({ 
-        index: d.index, 
-        area: Math.round(d.area),
-        width: Math.round(d.bbox.width),
-        height: Math.round(d.bbox.height)
-      })));
-      
-      // Sort Culture shapes by area (largest first, smallest accent last)
-      rightData.sort((a, b) => b.area - a.area);
+
+      // Sort Culture shapes by area (smallest first, accents then main letters)
+      rightData.sort((a, b) => a.area - b.area);
       const rightPaths = rightData.map(d => d.path);
-      
-      console.log('After sorting by area:', rightData.map(d => ({ 
-        index: d.index, 
-        area: Math.round(d.area)
-      })));
+
+      // Build full animation order for identification (index = draw order on screen)
+      const animationOrder: {
+        index: number;
+        word: string;
+        pathDomIndex: number;
+        area?: number;
+        path: SVGPathElement;
+      }[] = [];
+      leftPaths.forEach((path) => {
+        const pathIndex = strokePaths.indexOf(path);
+        animationOrder.push({
+          index: animationOrder.length,
+          word: "Cold",
+          pathDomIndex: pathIndex,
+          path,
+        });
+      });
+      rightPaths.forEach((path) => {
+        const pathIndex = strokePaths.indexOf(path);
+        const info = rightData.find((d) => d.path === path);
+        animationOrder.push({
+          index: animationOrder.length,
+          word: "Culture",
+          pathDomIndex: pathIndex,
+          area: info ? Math.round(info.area) : undefined,
+          path,
+        });
+      });
+
+      // Debug: log animation order so you can match "the 5th element" to a path
+      console.log(
+        "%cLogo intro — draw order (index = order on screen)",
+        "font-weight:bold; font-size:11px;"
+      );
+      console.table(
+        animationOrder.map((o) => ({
+          "Draw #": o.index,
+          Word: o.word,
+          "Path in DOM": o.pathDomIndex,
+          ...(o.area != null && { "Area (px²)": o.area }),
+        }))
+      );
+
+      // Set data attributes so you can inspect in DevTools (hover over paths to see draw order)
+      animationOrder.forEach((o) => {
+        o.path.setAttribute("data-draw-index", String(o.index));
+        o.path.setAttribute("data-word", o.word);
+      });
       
       const staggerAmount = 0.08;
       // Draw left word first (Cold)
