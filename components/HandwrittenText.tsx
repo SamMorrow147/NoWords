@@ -99,7 +99,7 @@ export default function HandwrittenText() {
     let rafId: number;
     let wasForceHidden = false;
     function ensureHidden() {
-      if (sectionTwo) {
+      if (sectionTwo && container) {
         const s2Top = sectionTwo.getBoundingClientRect().top;
         const vh = window.innerHeight;
         if (s2Top < vh * 0.5) {
