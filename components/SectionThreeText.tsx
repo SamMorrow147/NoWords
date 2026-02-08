@@ -19,8 +19,8 @@ export default function SectionThreeText() {
 
     function tick() {
       const vh = window.innerHeight;
-      const s3Top = sectionThree.getBoundingClientRect().top;
-      const s4Top = sectionFour.getBoundingClientRect().top;
+      const s3Top = sectionThree!.getBoundingClientRect().top;
+      const s4Top = sectionFour!.getBoundingClientRect().top;
 
       // Fade in: section-three top from -5% → -25% of viewport
       const inStart = vh * -0.05;

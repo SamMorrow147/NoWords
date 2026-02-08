@@ -19,8 +19,8 @@ export default function SectionThreeFoggyCorner() {
 
     function tick() {
       const vh = window.innerHeight;
-      const s3Top = sectionThree.getBoundingClientRect().top;
-      const s4Top = sectionFour.getBoundingClientRect().top;
+      const s3Top = sectionThree!.getBoundingClientRect().top;
+      const s4Top = sectionFour!.getBoundingClientRect().top;
 
       // Fade in: section-three top from 12% → -15% of viewport (same feel as section 2 fog)
       const inStart = vh * 0.12;
