@@ -47,7 +47,7 @@ export default function SectionFourText() {
   return (
     <div
       ref={textRef}
-      className="fixed inset-0 flex items-end justify-center pb-[8vh] xl:pb-[3vh] z-[3] pointer-events-none"
+      className="fixed inset-0 flex items-end justify-center pb-[12vh] xl:pb-[6vh] z-[3] pointer-events-none"
       style={{
         opacity: 0,
         ...textStyle,
@@ -72,7 +72,7 @@ export default function SectionFourText() {
             className="absolute top-0 left-0 pointer-events-none"
             style={{
               ...textStyle,
-              background: "rgba(0, 0, 0, 0.45)",
+              background: "rgba(0, 0, 0, 0.3)",
               backgroundClip: "text",
               WebkitBackgroundClip: "text",
               color: "transparent",
@@ -89,7 +89,7 @@ export default function SectionFourText() {
             className="absolute top-0 left-0 pointer-events-none"
             style={{
               ...textStyle,
-              background: "rgba(0, 0, 0, 0.45)",
+              background: "rgba(0, 0, 0, 0.3)",
               backgroundClip: "text",
               WebkitBackgroundClip: "text",
               color: "transparent",

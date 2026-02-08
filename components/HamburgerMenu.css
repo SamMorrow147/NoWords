@@ -97,6 +97,7 @@
   transform: scale(0.92);
   transition: opacity 0.5s ease, transform 0.5s ease;
   pointer-events: none;
+  overflow: hidden; /* contain the ice texture */
 }
 
 .main-nav.toggled {
@@ -105,10 +106,75 @@
   pointer-events: auto;
 }
 
+/* ---- Ice freeze overlay – 3 edge layers ---- */
+.nav-ice-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  mix-blend-mode: screen;
+}
+
+/* Shared styles for each ice edge layer */
+.nav-ice-edge {
+  position: absolute;
+  inset: 0;
+  background-image: url("/IceTexture.png");
+  background-size: 100% 100%;
+  background-position: center;
+  background-repeat: no-repeat;
+  pointer-events: none;
+  opacity: 0;
+}
+
+/* Left edge — grows from left */
+.nav-ice-left {
+  -webkit-mask-image: linear-gradient(to right, black 0%, black 30%, rgba(0,0,0,0.3) 55%, transparent 75%);
+  mask-image: linear-gradient(to right, black 0%, black 30%, rgba(0,0,0,0.3) 55%, transparent 75%);
+  -webkit-mask-size: 0% 100%;
+  mask-size: 0% 100%;
+  -webkit-mask-position: left center;
+  mask-position: left center;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+}
+
+/* Right edge — grows from right */
+.nav-ice-right {
+  -webkit-mask-image: linear-gradient(to left, black 0%, black 30%, rgba(0,0,0,0.3) 55%, transparent 75%);
+  mask-image: linear-gradient(to left, black 0%, black 30%, rgba(0,0,0,0.3) 55%, transparent 75%);
+  -webkit-mask-size: 0% 100%;
+  mask-size: 0% 100%;
+  -webkit-mask-position: right center;
+  mask-position: right center;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+}
+
+/* Bottom edge — grows from bottom */
+.nav-ice-bottom {
+  -webkit-mask-image: linear-gradient(to top, black 0%, black 30%, rgba(0,0,0,0.3) 55%, transparent 75%);
+  mask-image: linear-gradient(to top, black 0%, black 30%, rgba(0,0,0,0.3) 55%, transparent 75%);
+  -webkit-mask-size: 100% 0%;
+  mask-size: 100% 0%;
+  -webkit-mask-position: bottom center;
+  mask-position: bottom center;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+}
+
+/* Make sure nav content sits above the ice */
 .main-nav ul {
+  position: relative;
+  z-index: 1;
   padding: 0;
   list-style: none;
   margin: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
 }
 
 .main-nav li {
@@ -120,19 +186,20 @@
 }
 
 .main-nav a {
-  font-size: 1.35em;
-  font-weight: 300;
+  font-family: 'Abject Failure', sans-serif;
+  font-size: clamp(2.5rem, 8vw, 5rem);
+  font-weight: 600;
   letter-spacing: 0.03em;
   color: #fff;
-  padding: 0.9em 0;
+  padding: 0.5em 0;
   display: block;
-  transition: opacity 0.4s ease, padding-left 0.4s ease;
+  text-align: center;
+  transition: opacity 0.4s ease;
   text-decoration: none;
 }
 
 .main-nav a:hover {
   opacity: 0.55;
-  padding-left: 1em;
 }
 
 /* ---- Content wrapper ----

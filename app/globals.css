@@ -52,6 +52,39 @@ body {
 
 /* Section fog heights are set via Tailwind classes on the components */
 
+/* Drops page: logo shimmer effect – two purples only, no pink */
+.logo-shimmer {
+  --duration: 2.2s;
+
+  /* Only these two purples – no pink; narrow band for accent to avoid blend */
+  background: linear-gradient(
+    90deg,
+    #6b21a8 0%,
+    #6b21a8 38%,
+    #4921a8 50%,
+    #6b21a8 62%,
+    #6b21a8 100%
+  ) !important;
+  background-size: 200% 100% !important;
+  background-color: #6b21a8 !important; /* fallback; no pink */
+  animation: logo-shimmer var(--duration) linear infinite;
+  color: transparent; /* prevent any text color leaking in */
+
+  -webkit-mask-image: url("/ColdCulture-white.svg");
+  mask-image: url("/ColdCulture-white.svg");
+  -webkit-mask-size: contain;
+  mask-size: contain;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  mask-position: center;
+}
+
+@keyframes logo-shimmer {
+  0%   { background-position: 100% 0; }
+  100% { background-position: -100% 0; }
+}
+
 /* Drops page: use inset only (no height) so mobile viewport is correct */
 .drops-page-root {
   position: fixed;

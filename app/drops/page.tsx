@@ -401,10 +401,11 @@ export default function DropsPage() {
         {/* Header */}
         <header className="relative z-20 flex justify-center items-center px-4 py-3 text-white bg-black/20 backdrop-blur-sm">
           <a href="/" className="flex justify-center items-center" aria-label="Cold Culture home">
-            <img
-              src="/ColdCulture.svg"
-              alt="Cold Culture"
-              className="h-8 md:h-9 w-auto brightness-0 invert"
+            <div
+              className="logo-shimmer h-8 md:h-9"
+              style={{ aspectRatio: "4668 / 1022" }}
+              role="img"
+              aria-label="Cold Culture"
             />
           </a>
         </header>
