@@ -21,14 +21,28 @@ const kronaOne = Krona_One({
 });
 
 // Image used for link previews (iMessage, Facebook, etc.)
-const SHARE_IMAGE = "/freepik__can-you-give-me-an-close-up-image-of-this-small-5-__41049.png";
+const SHARE_IMAGE_PATH =
+  "/freepik__dramatic-close-up-of-her-shirt-in-a-winter-storm__35141.png";
 
-// Required for social crawlers to resolve the share image to an absolute URL
+// Required for social crawlers: they need a single canonical absolute URL.
+// Set NEXT_PUBLIC_SITE_URL in production to your canonical URL (e.g. https://shopcoldculture.com).
 function getBaseUrl() {
-  if (process.env.NEXT_PUBLIC_SITE_URL) return process.env.NEXT_PUBLIC_SITE_URL;
+  if (process.env.NEXT_PUBLIC_SITE_URL) {
+    const url = process.env.NEXT_PUBLIC_SITE_URL;
+    return url.startsWith("http") ? url : `https://${url}`;
+  }
   if (process.env.VERCEL_URL) return `https://${process.env.VERCEL_URL}`;
-  return "https://shopcoldculture.com"; // fallback for production
+  return "https://shopcoldculture.com";
 }
+
+function getShareImageUrl() {
+  const base = getBaseUrl().replace(/\/$/, "");
+  return `${base}${SHARE_IMAGE_PATH}`;
+}
+
+// Recommended OG size for reliable previews (Facebook, iMessage, etc.)
+const OG_IMAGE_WIDTH = 1200;
+const OG_IMAGE_HEIGHT = 630;
 
 export const metadata: Metadata = {
   metadataBase: new URL(getBaseUrl()),
@@ -38,15 +52,30 @@ export const metadata: Metadata = {
     icon: "/Favacon.png",
   },
   openGraph: {
+    type: "website",
     title: "Cold Culture",
     description: "High-end lifestyle brand",
-    images: [SHARE_IMAGE],
+    images: [
+      {
+        url: getShareImageUrl(),
+        width: OG_IMAGE_WIDTH,
+        height: OG_IMAGE_HEIGHT,
+        alt: "Cold Culture",
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
     title: "Cold Culture",
     description: "High-end lifestyle brand",
-    images: [SHARE_IMAGE],
+    images: [
+      {
+        url: getShareImageUrl(),
+        width: OG_IMAGE_WIDTH,
+        height: OG_IMAGE_HEIGHT,
+        alt: "Cold Culture",
+      },
+    ],
   },
 };
 
