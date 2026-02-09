@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Script from "next/script";
 import { Geist, Geist_Mono, Krona_One } from "next/font/google";
 import HamburgerMenu from "@/components/HamburgerMenu";
 import "./globals.css";
@@ -19,8 +20,8 @@ const kronaOne = Krona_One({
   subsets: ["latin"],
 });
 
-// Image used for link previews (iMessage, Facebook, etc.) — metal section background (earrings / woman)
-const SHARE_IMAGE = "/freepik__a-product-shot-of-earrings-on-a-beautiful-ethnic-w__60530.png";
+// Image used for link previews (iMessage, Facebook, etc.)
+const SHARE_IMAGE = "/freepik__can-you-give-me-an-close-up-image-of-this-small-5-__41049.png";
 
 // Required for social crawlers to resolve the share image to an absolute URL
 function getBaseUrl() {
@@ -64,6 +65,18 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} ${kronaOne.variable} antialiased`}
       >
+        <Script
+          src="https://www.googletagmanager.com/gtag/js?id=G-B7XW7YNMB5"
+          strategy="afterInteractive"
+        />
+        <Script id="google-analytics" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'G-B7XW7YNMB5');
+          `}
+        </Script>
         <HamburgerMenu>{children}</HamburgerMenu>
       </body>
     </html>
