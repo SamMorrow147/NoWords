@@ -42,64 +42,31 @@ export default function SectionFourText() {
     fontSize: "clamp(4rem, 15vw, 12rem)",
     fontWeight: 600,
     transform: "translateZ(0) rotate(-4deg)",
+    backgroundImage: `url(${SECTION_FOUR_IMAGE})`,
+    backgroundSize: "cover",
+    backgroundPosition: "center",
+    backgroundClip: "text",
+    WebkitBackgroundClip: "text",
+    color: "transparent",
+    WebkitTextFillColor: "transparent",
+    WebkitTextStroke: "1.5px white",
+    paintOrder: "stroke fill",
   };
 
   return (
     <div
       ref={textRef}
       className="fixed inset-0 flex items-end justify-center pb-[12vh] xl:pb-[6vh] z-[40] pointer-events-none"
-      style={{
-        opacity: 0,
-        ...textStyle,
-        backgroundImage: `url(${SECTION_FOUR_IMAGE})`,
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-        backgroundClip: "text",
-        WebkitBackgroundClip: "text",
-        color: "transparent",
-        WebkitTextFillColor: "transparent",
-      }}
+      style={{ opacity: 0, ...textStyle }}
     >
       <Link
         href="/drops"
         className="pointer-events-auto cursor-pointer flex items-end gap-[0.12em]"
         aria-label="View drops"
+        style={textStyle}
       >
-        <span className="relative inline-block" style={textStyle}>
-          drops
-          {/* Darken the image inside the text */}
-          <span
-            className="absolute top-0 left-0 pointer-events-none"
-            style={{
-              ...textStyle,
-              background: "rgba(0, 0, 0, 0.3)",
-              backgroundClip: "text",
-              WebkitBackgroundClip: "text",
-              color: "transparent",
-              WebkitTextFillColor: "transparent",
-            }}
-            aria-hidden
-          >
-            drops
-          </span>
-        </span>
-        <span className="relative inline-block" style={textStyle}>
-          &gt;
-          <span
-            className="absolute top-0 left-0 pointer-events-none"
-            style={{
-              ...textStyle,
-              background: "rgba(0, 0, 0, 0.3)",
-              backgroundClip: "text",
-              WebkitBackgroundClip: "text",
-              color: "transparent",
-              WebkitTextFillColor: "transparent",
-            }}
-            aria-hidden
-          >
-            &gt;
-          </span>
-        </span>
+        <span>drops</span>
+        <span>&gt;</span>
       </Link>
     </div>
   );

@@ -616,7 +616,16 @@ export default function DropsPage() {
                 </span>
               )}
               <div className="item-description absolute bottom-0 inset-x-0 h-[72px] text-center w-full pointer-events-none flex flex-col justify-start pt-1">
-                <h2 className={`px-3 pt-2 md:pt-3 text-lg md:text-xl lg:text-2xl font-semibold leading-snug capitalize ${index >= 5 ? "text-gray-400" : "text-white"}`} style={{ fontFamily: "'Abject Failure', sans-serif" }}>
+                <h2
+                  className={`px-3 pt-2 md:pt-3 text-lg md:text-xl lg:text-2xl font-semibold leading-snug capitalize ${index >= 5 ? "text-gray-400" : "text-white"}`}
+                  style={{
+                    fontFamily: "'Abject Failure', sans-serif",
+                    ...(index < 5 && {
+                      WebkitTextStroke: "1px white",
+                      paintOrder: "stroke fill",
+                    }),
+                  }}
+                >
                   {product.title.split("\n").map((line, i) => (
                     <span key={i}>
                       {line}

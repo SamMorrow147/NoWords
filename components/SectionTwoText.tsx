@@ -66,23 +66,39 @@ export default function SectionTwoText() {
       className="fixed inset-0 z-[40] pointer-events-none"
       style={{ opacity: 0, transform: "translateZ(0)" }}
     >
-      {/* Gradient stroke layer (behind) — white top → purple bottom */}
+      {/* Gradient stroke layer (behind) — white top → purple bottom on "you " and "cha!" only */}
       <div
         className="absolute inset-0 flex items-end justify-center pb-[8vh] xl:pb-[3vh]"
         aria-hidden
-        style={{
-          ...sharedFont,
-          background: "linear-gradient(to bottom, rgba(255,255,255,0.9), rgba(128,0,128,0.85))",
-          backgroundClip: "text",
-          WebkitBackgroundClip: "text",
-          WebkitTextFillColor: "transparent",
-          color: "transparent",
-          WebkitTextStroke: "3px transparent",
-        }}
+        style={sharedFont}
       >
-        you BETcha!
+        <span
+          style={{
+            background: "linear-gradient(to bottom, rgba(255,255,255,0.9), rgba(128,0,128,0.85))",
+            backgroundClip: "text",
+            WebkitBackgroundClip: "text",
+            WebkitTextFillColor: "transparent",
+            color: "transparent",
+            WebkitTextStroke: "3px transparent",
+          }}
+        >
+          you{" "}
+        </span>
+        <span style={{ color: "transparent", WebkitTextStroke: "transparent" }}>BET</span>
+        <span
+          style={{
+            background: "linear-gradient(to bottom, rgba(255,255,255,0.9), rgba(128,0,128,0.85))",
+            backgroundClip: "text",
+            WebkitBackgroundClip: "text",
+            WebkitTextFillColor: "transparent",
+            color: "transparent",
+            WebkitTextStroke: "3px transparent",
+          }}
+        >
+          cha!
+        </span>
       </div>
-      {/* Image fill layer (front) — covers the glyph interior */}
+      {/* Image fill layer (front) — "BET" has white stroke only */}
       <div
         className="absolute inset-0 flex items-end justify-center pb-[8vh] xl:pb-[3vh]"
         style={{
@@ -97,7 +113,16 @@ export default function SectionTwoText() {
           WebkitTextFillColor: "transparent",
         }}
       >
-        you BETcha!
+        you{" "}
+        <span
+          style={{
+            WebkitTextStroke: "2px white",
+            paintOrder: "stroke fill",
+          }}
+        >
+          BET
+        </span>
+        cha!
       </div>
     </div>
   );

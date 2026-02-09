@@ -60,7 +60,7 @@ export default function SectionThreeText() {
   return (
     <div
       ref={textRef}
-      className="fixed inset-0 flex items-end justify-end pr-[8vw] pb-[4vh] xl:pb-[2vh] z-[40] pointer-events-none"
+      className="fixed inset-0 flex items-end justify-end pr-[8vw] pb-[12vh] md:pb-[6vh] xl:pb-[2vh] z-[40] pointer-events-none"
       style={{
         opacity: 0,
         fontFamily: "'Abject Failure', sans-serif",
