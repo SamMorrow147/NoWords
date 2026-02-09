@@ -33,6 +33,9 @@ export const metadata: Metadata = {
   metadataBase: new URL(getBaseUrl()),
   title: "Cold Culture",
   description: "High-end lifestyle brand",
+  icons: {
+    icon: "/Favacon.png",
+  },
   openGraph: {
     title: "Cold Culture",
     description: "High-end lifestyle brand",
