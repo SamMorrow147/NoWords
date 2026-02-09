@@ -253,6 +253,10 @@ body {
 .drops-item-sold-out {
   opacity: 0.65;
 }
+/* HOTC V1 sold-out card: less transparent so it reads more solid */
+.drops-item-sold-out.drops-item-hotc-v1 {
+  opacity: 0.95;
+}
 .drops-item-sold-out .item-description h2 {
   color: #9ca3af !important;
   overflow: visible;

@@ -13,7 +13,9 @@ const ITEMS = [
   { slug: "knux-keychain", img: "/KnuxKeychain.png", title: "Knux Keychain", price: "$ 45", checkoutUrl: "https://buy.stripe.com/aFa7sE4Hsbf0661go15AQ03" },
   { slug: "knux-necklace", img: "/KnuckNecklace.png", title: "Knux Necklace", price: "$ 75", checkoutUrl: "https://buy.stripe.com/8x29AMa1MgzkeCx3Bf5AQ04" },
   { slug: "knux-earrings", img: "/Knuxearings.png", title: "Knux Earrings", price: "$ 45", checkoutUrl: "https://buy.stripe.com/aFadR23Do82OeCx1t75AQ00" },
-  { slug: "cc-tank", img: "/freepik__minimal-soft-studio-light-photography-this-tank-to__85476.png", title: "CC Tank", price: "$ 40" },
+  { slug: "lumberjack", img: "/freepik__can-you-give-me-a-product-shot-of-this-tank-top-fl__63712.png", title: "Lumberjack", price: "$ —" },
+  { slug: "beach-boy", img: "/freepik__minimal-soft-studio-light-photography-this-tank-to__85476.png", title: "Beach Boy", price: "$ 40" },
+  { slug: "hotc-v1", img: "/freepik__minimal-soft-studio-light-photography-a-navy-hoody__69621.png", title: "HOTC V1", price: "$ —" },
   { slug: "hotc-sticker", img: "/HOTC-Sticker-min.png", title: "Heart of the City", price: "$ 40" },
 ];
 
@@ -620,7 +622,7 @@ export default function DropsPage() {
             <div
               key={index}
               ref={(el) => { itemEls.current[index] = el; }}
-              className={`drops-item drops-item-foggy drops-card relative w-[75vw] h-[220px] md:w-[260px] md:h-[260px] lg:w-[300px] lg:h-[280px] rounded-xl flex-shrink-0 shadow-lg overflow-visible ${index >= 5 ? "drops-item-sold-out cursor-not-allowed" : "cursor-pointer"}`}
+              className={`drops-item drops-item-foggy drops-card relative w-[75vw] h-[220px] md:w-[260px] md:h-[260px] lg:w-[300px] lg:h-[280px] rounded-xl flex-shrink-0 shadow-lg overflow-visible ${index >= 5 ? "drops-item-sold-out cursor-not-allowed" : "cursor-pointer"} ${product.slug === "hotc-v1" ? "drops-item-hotc-v1" : ""}`}
             >
               <img
                 className={`item-img absolute inset-x-0 bottom-[72px] w-full object-contain object-bottom ${index < 2 ? "scale-[1.65] origin-bottom" : ""}`}
