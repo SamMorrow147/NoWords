@@ -8,11 +8,11 @@ import { Draggable } from "gsap/all";
 gsap.registerPlugin(Draggable);
 
 const ITEMS = [
-  { slug: "knux-tee-tan", img: "/T-T-CC copy.png", title: "MN Knux T", price: "$ 85", checkoutUrl: "https://buy.stripe.com/test_fZufZa9YQ72SbI50vc3AY03" },
-  { slug: "knux-tee-purple", img: "/P-T-CC.png", title: "MN Knux T", price: "$ 85", checkoutUrl: "https://buy.stripe.com/test_28E3co2wodrgfYl5Pw3AY01" },
-  { slug: "knux-keychain", img: "/KnuxKeychain.png", title: "Knux Keychain", price: "$ 45" },
-  { slug: "knux-necklace", img: "/KnuckNecklace.png", title: "Knux Necklace", price: "$ 75", checkoutUrl: "https://buy.stripe.com/test_bJefZab2U2MC4fD0vc3AY05" },
-  { slug: "knux-earrings", img: "/Knuxearings.png", title: "Knux Earrings", price: "$ 45", checkoutUrl: "https://buy.stripe.com/test_00wfZafja3QGdQd7XE3AY04" },
+  { slug: "knux-tee-tan", img: "/T-T-CC copy.png", title: "MN Knux T", price: "$ 85", checkoutUrl: "https://buy.stripe.com/6oU7sEa1Mfvg661dbP5AQ01" },
+  { slug: "knux-tee-purple", img: "/P-T-CC.png", title: "MN Knux T", price: "$ 85", checkoutUrl: "https://buy.stripe.com/9B6bIUb5Qcj47a58Vz5AQ02" },
+  { slug: "knux-keychain", img: "/KnuxKeychain.png", title: "Knux Keychain", price: "$ 45", checkoutUrl: "https://buy.stripe.com/aFa7sE4Hsbf0661go15AQ03" },
+  { slug: "knux-necklace", img: "/KnuckNecklace.png", title: "Knux Necklace", price: "$ 75", checkoutUrl: "https://buy.stripe.com/8x29AMa1MgzkeCx3Bf5AQ04" },
+  { slug: "knux-earrings", img: "/Knuxearings.png", title: "Knux Earrings", price: "$ 45", checkoutUrl: "https://buy.stripe.com/aFadR23Do82OeCx1t75AQ00" },
   { slug: "cc-tank", img: "/freepik__minimal-soft-studio-light-photography-this-tank-to__85476.png", title: "CC Tank", price: "$ 40" },
   { slug: "hotc-sticker", img: "/HOTC-Sticker-min.png", title: "Heart of the City", price: "$ 40" },
 ];
