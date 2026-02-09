@@ -7,11 +7,11 @@ import { Draggable } from "gsap/Draggable";
 gsap.registerPlugin(Draggable);
 
 const ITEMS = [
-  { img: "/T-T-CC copy.png", title: "MN Knux T", price: "$ 85", checkoutUrl: "https://buy.stripe.com/test_8x29AM7QI2MCeUh3Ho3AY02" },
+  { img: "/T-T-CC copy.png", title: "MN Knux T", price: "$ 85", checkoutUrl: "https://buy.stripe.com/test_fZufZa9YQ72SbI50vc3AY03" },
   { img: "/P-T-CC.png", title: "MN Knux T", price: "$ 85", checkoutUrl: "https://buy.stripe.com/test_28E3co2wodrgfYl5Pw3AY01" },
   { img: "/KnuxKeychain.png", title: "Knux Keychain", price: "$ 45" },
-  { img: "/KnuckNecklace.png", title: "Knux Necklace", price: "$ 75" },
-  { img: "/Knuxearings.png", title: "Knux Earrings", price: "$ 75" },
+  { img: "/KnuckNecklace.png", title: "Knux Necklace", price: "$ 75", checkoutUrl: "https://buy.stripe.com/test_bJefZab2U2MC4fD0vc3AY05" },
+  { img: "/Knuxearings.png", title: "Knux Earrings", price: "$ 45", checkoutUrl: "https://buy.stripe.com/test_00wfZafja3QGdQd7XE3AY04" },
   { img: "/freepik__minimal-soft-studio-light-photography-this-tank-to__85476.png", title: "CC Tank", price: "$ 40" },
   { img: "/HOTC-Sticker-min.png", title: "Heart of the City", price: "$ 40" },
 ];
@@ -30,22 +30,42 @@ export default function DropsPage() {
   const activeRef = useRef<number | null>(null);
   const spacerRef = useRef<HTMLDivElement | null>(null);
 
+  // Capture the hash during the very first client render —
+  // this survives React strict-mode double-effect runs because
+  // refs persist across unmount/remount cycles within strict mode.
+  const capturedHashRef = useRef<string>("");
+  if (typeof window !== "undefined" && !capturedHashRef.current) {
+    capturedHashRef.current = window.location.hash;
+  }
+
   useEffect(() => {
     const panel = panelRef.current;
     const cards = cardsRef.current;
     const bgs = bgRefs.current;
     if (!panel || !cards) return;
 
-    /* ── Background init: only bg3 visible ── */
-    if (bgs[0]) gsap.set(bgs[0], { scale: 2, opacity: 0 });
-    if (bgs[1]) gsap.set(bgs[1], { scale: 2, opacity: 0 });
-    if (bgs[2]) gsap.set(bgs[2], { scale: 1, opacity: 1 });
+    /* ── Check for deep-link hash (read from ref, not window — survives strict mode) ── */
+    const startOnSteel = capturedHashRef.current === "#steel";
+    // Necklace is index 3 in ITEMS; indices 2-4 (keychain, necklace, earrings) use BG 1
+    const startSnapIdx = startOnSteel ? 3 : 0;
+
+    /* ── Background init: show the correct bg for starting position ── */
+    // BG mapping: cards 0-1 → bg 2, cards 2-4 → bg 1, cards 5-6 → bg 0
+    const startBgIdx = startOnSteel ? 1 : 2;
+    bgs.forEach((bg, i) => {
+      if (!bg) return;
+      gsap.set(bg, {
+        scale: i === startBgIdx ? 1 : 2,
+        opacity: i === startBgIdx ? 1 : 0,
+      });
+    });
 
     /* ── Per-card snap points ── */
     const cardEls = Array.from(cards.children) as HTMLElement[];
-    const panelW = panel.offsetWidth;
+    let panelW = panel.offsetWidth;
 
     function calcSnapPoints() {
+      panelW = panel!.offsetWidth;
       const pts: number[] = [];
       for (let i = 0; i < cardEls.length; i++) {
         // Snap position centers each card in the viewport
@@ -59,6 +79,11 @@ export default function DropsPage() {
 
     let snapPoints = calcSnapPoints();
 
+    /* ── Position cards at starting snap immediately (before Draggable) ── */
+    if (startSnapIdx > 0 && startSnapIdx < snapPoints.length) {
+      gsap.set(cards, { x: snapPoints[startSnapIdx] });
+    }
+
     function getActiveSnapIndex(dragX: number) {
       return snapPoints.reduce(
         (best, _p, i) =>
@@ -67,6 +92,24 @@ export default function DropsPage() {
             : best,
         0
       );
+    }
+
+    // Swipe threshold: only need to drag this fraction toward next/prev to snap there (mobile-friendly)
+    const SWIPE_THRESHOLD = 0.2;
+
+    function getSnapIndexAfterDrag(x: number) {
+      const dragDelta = x - snapPoints[currentSnapIdx];
+      const nextIdx = currentSnapIdx + 1;
+      const prevIdx = currentSnapIdx - 1;
+      if (nextIdx < snapPoints.length) {
+        const distanceToNext = snapPoints[nextIdx] - snapPoints[currentSnapIdx];
+        if (dragDelta <= SWIPE_THRESHOLD * distanceToNext) return nextIdx;
+      }
+      if (prevIdx >= 0) {
+        const distanceToPrev = snapPoints[prevIdx] - snapPoints[currentSnapIdx];
+        if (dragDelta >= SWIPE_THRESHOLD * distanceToPrev) return prevIdx;
+      }
+      return currentSnapIdx;
     }
 
     function switchBg(cardIdx: number) {
@@ -293,7 +336,7 @@ export default function DropsPage() {
 
     /* ── GSAP Draggable ── */
     let wasDragging = false;
-    let currentSnapIdx = 0;
+    let currentSnapIdx = startSnapIdx;
 
     const minSnap = snapPoints[snapPoints.length - 1];
     const maxSnap = snapPoints[0];
@@ -311,7 +354,7 @@ export default function DropsPage() {
       },
       onDragEnd() {
         const x = this.x;
-        const nearestIdx = getActiveSnapIndex(x);
+        const nearestIdx = getSnapIndexAfterDrag(x);
         currentSnapIdx = nearestIdx;
         gsap.to(cards, {
           x: snapPoints[nearestIdx],
@@ -323,6 +366,23 @@ export default function DropsPage() {
         setTimeout(() => { wasDragging = false; }, 80);
       },
     });
+
+    /* ── Deep-link: re-position after layout is stable & sync Draggable ── */
+    if (startOnSteel) {
+      requestAnimationFrame(() => {
+        snapPoints = calcSnapPoints();
+        if (startSnapIdx < snapPoints.length) {
+          gsap.set(cards, { x: snapPoints[startSnapIdx] });
+        }
+        // Sync Draggable's internal position & bounds with the new snap points
+        const newMin = snapPoints[snapPoints.length - 1];
+        const newMax = snapPoints[0];
+        draggable.applyBounds({ minX: newMin - 40, maxX: newMax + 40 });
+        draggable.update();
+        // Clear hash only AFTER everything is positioned
+        window.history.replaceState(null, "", window.location.pathname);
+      });
+    }
 
     /* ── Native click handlers on each card (more reliable than Draggable onClick) ── */
     function handleCardClick(e: MouseEvent) {
@@ -464,11 +524,11 @@ export default function DropsPage() {
         {/* Dark backdrop when a product is open – makes the product pop */}
         <div className="drops-active-backdrop" aria-hidden />
         {/* Header */}
-        <header className="relative z-20 flex justify-center items-center px-4 py-3 text-white bg-black/20 backdrop-blur-sm">
-          <a href="/" className="flex justify-center items-center" aria-label="Cold Culture home">
+        <header className="relative z-20 flex justify-center items-center px-4 py-3 text-white bg-black/20 backdrop-blur-sm overflow-visible">
+          <a href="/" className="flex justify-center items-center overflow-visible" aria-label="Cold Culture home">
             <div
-              className="logo-shimmer h-8 md:h-9"
-              style={{ aspectRatio: "4668 / 1022" }}
+              className="logo-shimmer h-14 md:h-16"
+              style={{ aspectRatio: "4668 / 1022", marginTop: "-0.5rem", marginBottom: "-0.5rem" }}
               role="img"
               aria-label="Cold Culture"
             />

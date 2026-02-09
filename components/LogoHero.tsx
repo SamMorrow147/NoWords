@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import AnimatedLogo from "./AnimatedLogo";
@@ -12,6 +12,7 @@ const FINAL_OFFSET = 24;
 
 export default function LogoHero() {
   const wrapperRef = useRef<HTMLDivElement>(null);
+  const [inSectionFour, setInSectionFour] = useState(false);
 
   useEffect(() => {
     const wrapper = wrapperRef.current;
@@ -60,6 +61,22 @@ export default function LogoHero() {
     };
   }, []);
 
+  // In section four (latest drops): switch to purple gradient shimmer logo
+  useEffect(() => {
+    const sectionFour = document.getElementById("section-four");
+    if (!sectionFour) return;
+
+    const trigger = ScrollTrigger.create({
+      trigger: sectionFour,
+      start: "top 30%",
+      end: "top -10%",
+      onEnter: () => setInSectionFour(true),
+      onLeaveBack: () => setInSectionFour(false),
+    });
+
+    return () => trigger.kill();
+  }, []);
+
   return (
     <div 
       ref={wrapperRef} 
@@ -75,12 +92,35 @@ export default function LogoHero() {
       }} 
       aria-hidden
     >
-      <AnimatedLogo
-        className="text-[#e8e6e3] block w-full"
-        duration={2.2}
-        delay={0.4}
-        direction="left-to-right"
-      />
+      <div style={{ position: "relative", width: "100%", height: "100%" }}>
+        <span
+          style={{
+            display: "block",
+            opacity: inSectionFour ? 0 : 1,
+            transition: "opacity 0.35s ease",
+          }}
+        >
+          <AnimatedLogo
+            className="text-[#e8e6e3] block w-full"
+            duration={1.1}
+            delay={0.2}
+            direction="left-to-right"
+            strokeDuration={0.9}
+            fillDuration={1}
+          />
+        </span>
+        <div
+          className="logo-shimmer block w-full min-h-[2rem]"
+          style={{
+            position: "absolute",
+            inset: 0,
+            opacity: inSectionFour ? 1 : 0,
+            transition: "opacity 0.35s ease",
+            aspectRatio: "4668 / 1022",
+          }}
+          aria-hidden
+        />
+      </div>
     </div>
   );
 }

@@ -60,29 +60,49 @@ export default function SectionThreeText() {
   return (
     <div
       ref={textRef}
-      className="fixed inset-0 flex items-end justify-end pr-[18vw] pb-[4vh] xl:pb-[2vh] z-[3] pointer-events-none"
+      className="fixed inset-0 flex items-end justify-end pr-[8vw] pb-[4vh] xl:pb-[2vh] z-[40] pointer-events-none"
       style={{
         opacity: 0,
         fontFamily: "'Abject Failure', sans-serif",
-        fontSize: "clamp(6rem, 10vw, 7rem)",
+        fontSize: "clamp(7rem, 12vw, 9rem)",
         fontWeight: 600,
         backgroundImage: `url(${SECTION_THREE_IMAGE})`,
-        backgroundSize: "cover",
-        backgroundPosition: "center",
+        backgroundSize: "250%",
+        backgroundPosition: "bottom right",
         backgroundClip: "text",
         WebkitBackgroundClip: "text",
         color: "transparent",
         WebkitTextFillColor: "transparent",
-        transform: "translateZ(0) rotate(-15deg)",
+        WebkitTextStroke: "0.5px white",
+        paintOrder: "stroke fill",
+        transform: "translateZ(0) rotate(-8deg)",
       }}
     >
-      <span className="flex items-center gap-[0.15em]">
-        <span className="flex flex-col items-end leading-tight">
-          <span>Shop</span>
-          <span>Steel</span>
+      <a
+        href="/drops#steel"
+        className="pointer-events-auto cursor-pointer flex items-end justify-end"
+        aria-label="Shop Stainless – view necklace, keychain and earrings"
+        style={{
+          fontFamily: "inherit",
+          fontSize: "inherit",
+          fontWeight: "inherit",
+          backgroundImage: "inherit",
+          backgroundSize: "inherit",
+          backgroundPosition: "inherit",
+          backgroundClip: "inherit",
+          WebkitBackgroundClip: "inherit",
+          color: "transparent",
+          WebkitTextFillColor: "transparent",
+          WebkitTextStroke: "inherit",
+          paintOrder: "inherit",
+          transform: "inherit",
+        }}
+      >
+        <span className="flex items-center gap-[0.15em]">
+          <span>metal</span>
+          <span className="self-center" aria-hidden>&gt;</span>
         </span>
-        <span className="self-center" aria-hidden>&gt;</span>
-      </span>
+      </a>
     </div>
   );
 }

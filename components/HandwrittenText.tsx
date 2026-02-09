@@ -148,6 +148,7 @@ export default function HandwrittenText() {
         viewBox="0 0 76.02 54.85"
         className="w-56 md:w-80 lg:w-96"
         style={{
+          opacity: 0,
           transform: "rotate(5deg) translateZ(0)",
           filter: "drop-shadow(2px 2px 4px rgba(0,0,0,0.7)) drop-shadow(4px 4px 10px rgba(0,0,0,0.4))",
           WebkitTransform: "rotate(5deg) translateZ(0)",

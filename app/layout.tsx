@@ -19,9 +19,31 @@ const kronaOne = Krona_One({
   subsets: ["latin"],
 });
 
+// Image used for link previews (iMessage, Facebook, etc.) — section 3 background (necklace)
+const SHARE_IMAGE = "/freepik__close-up-product-shot-of-this-necklace-swinging-ou__60531.png";
+
+// Required for social crawlers to resolve the share image to an absolute URL
+function getBaseUrl() {
+  if (process.env.NEXT_PUBLIC_SITE_URL) return process.env.NEXT_PUBLIC_SITE_URL;
+  if (process.env.VERCEL_URL) return `https://${process.env.VERCEL_URL}`;
+  return "https://shopcoldculture.com"; // fallback for production
+}
+
 export const metadata: Metadata = {
+  metadataBase: new URL(getBaseUrl()),
   title: "Cold Culture",
   description: "High-end lifestyle brand",
+  openGraph: {
+    title: "Cold Culture",
+    description: "High-end lifestyle brand",
+    images: [SHARE_IMAGE],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Cold Culture",
+    description: "High-end lifestyle brand",
+    images: [SHARE_IMAGE],
+  },
 };
 
 export default function RootLayout({

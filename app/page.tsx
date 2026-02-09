@@ -15,6 +15,8 @@ import SectionFourFog from "@/components/SectionFourFog";
 import SectionFourText from "@/components/SectionFourText";
 import SectionThreeFoggyCorner from "@/components/SectionThreeFoggyCorner";
 import SectionThreeText from "@/components/SectionThreeText";
+import HomepageTopIce from "@/components/HomepageTopIce";
+import HeroScrollIce from "@/components/HeroScrollIce";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -161,16 +163,19 @@ export default function Home() {
       {/* Section 4: fog + "drop offs" text */}
       <SectionFourFog />
       <SectionFourText />
+      {/* Ice overlay when at top of page — same creep-in as nav; disappears on scroll down, replays on scroll back up */}
+      <HomepageTopIce />
       {/* Hero: full viewport, logo centered; on scroll logo moves to top-left */}
       <section className="relative min-h-screen">
         <ScrollBackground imagePath="/Heroimage.png" />
         <ZoomFigure imagePath="/CenterFigure.png" />
         <FoggyCorner imagePath="/Heroimage.png" />
+        <HeroScrollIce />
         {showSnow && (
           <div 
             ref={snowRef}
             className="fixed inset-0 pointer-events-none" 
-            style={{ zIndex: 25, opacity: 0 }}
+            style={{ zIndex: 30, opacity: 0 }}
           >
             <PixelSnow 
               color="#ffffff"

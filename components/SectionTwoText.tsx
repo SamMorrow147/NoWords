@@ -54,27 +54,51 @@ export default function SectionTwoText() {
     return () => cancelAnimationFrame(rafId);
   }, []);
 
+  const sharedFont = {
+    fontFamily: "'Abject Failure', sans-serif",
+    fontSize: "clamp(4rem, 15vw, 12rem)",
+    fontWeight: 600,
+  } as const;
+
   return (
     <div
       ref={textRef}
-      className="fixed inset-0 flex items-end justify-center pb-[8vh] xl:pb-[3vh] z-[3] pointer-events-none"
-      style={{
-        opacity: 0,
-        fontFamily: "'Abject Failure', sans-serif",
-        fontSize: "clamp(4rem, 15vw, 12rem)",
-        fontWeight: 600,
-        backgroundImage:
-          "url('/freepik__a-young-ethnic-woman-in-a-purple-shirt-and-winter-__60532.png')",
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-        backgroundClip: "text",
-        WebkitBackgroundClip: "text",
-        color: "transparent",
-        WebkitTextFillColor: "transparent",
-        transform: "translateZ(0)",
-      }}
+      className="fixed inset-0 z-[40] pointer-events-none"
+      style={{ opacity: 0, transform: "translateZ(0)" }}
     >
-      you BETcha!
+      {/* Gradient stroke layer (behind) — white top → purple bottom */}
+      <div
+        className="absolute inset-0 flex items-end justify-center pb-[8vh] xl:pb-[3vh]"
+        aria-hidden
+        style={{
+          ...sharedFont,
+          background: "linear-gradient(to bottom, rgba(255,255,255,0.9), rgba(128,0,128,0.85))",
+          backgroundClip: "text",
+          WebkitBackgroundClip: "text",
+          WebkitTextFillColor: "transparent",
+          color: "transparent",
+          WebkitTextStroke: "3px transparent",
+        }}
+      >
+        you BETcha!
+      </div>
+      {/* Image fill layer (front) — covers the glyph interior */}
+      <div
+        className="absolute inset-0 flex items-end justify-center pb-[8vh] xl:pb-[3vh]"
+        style={{
+          ...sharedFont,
+          backgroundImage:
+            "url('/freepik__a-young-ethnic-woman-in-a-purple-shirt-and-winter-__60532.png')",
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          backgroundClip: "text",
+          WebkitBackgroundClip: "text",
+          color: "transparent",
+          WebkitTextFillColor: "transparent",
+        }}
+      >
+        you BETcha!
+      </div>
     </div>
   );
 }

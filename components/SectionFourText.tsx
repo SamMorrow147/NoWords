@@ -47,7 +47,7 @@ export default function SectionFourText() {
   return (
     <div
       ref={textRef}
-      className="fixed inset-0 flex items-end justify-center pb-[12vh] xl:pb-[6vh] z-[3] pointer-events-none"
+      className="fixed inset-0 flex items-end justify-center pb-[12vh] xl:pb-[6vh] z-[40] pointer-events-none"
       style={{
         opacity: 0,
         ...textStyle,
@@ -63,10 +63,10 @@ export default function SectionFourText() {
       <Link
         href="/drops"
         className="pointer-events-auto cursor-pointer flex items-end gap-[0.12em]"
-        aria-label="View latest drops"
+        aria-label="View drops"
       >
         <span className="relative inline-block" style={textStyle}>
-          latest drops
+          drops
           {/* Darken the image inside the text */}
           <span
             className="absolute top-0 left-0 pointer-events-none"
@@ -80,7 +80,7 @@ export default function SectionFourText() {
             }}
             aria-hidden
           >
-            latest drops
+            drops
           </span>
         </span>
         <span className="relative inline-block" style={textStyle}>

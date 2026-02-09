@@ -1,12 +1,14 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import { usePathname } from "next/navigation";
 import Link from "next/link";
 import "./HamburgerMenu.css";
 
 const NAV_LINKS = [
   { href: "/", label: "Home" },
   { href: "/drops", label: "Drops" },
+  { href: "/drops#steel", label: "Metal", forceReload: true },
 ];
 
 export default function HamburgerMenu({
@@ -15,10 +17,16 @@ export default function HamburgerMenu({
   children: React.ReactNode;
 }) {
   const [toggled, setToggled] = useState(false);
+  const pathname = usePathname();
   const iceRef = useRef<HTMLDivElement>(null);
   const iceLeftRef = useRef<HTMLDivElement>(null);
   const iceRightRef = useRef<HTMLDivElement>(null);
   const iceBottomRef = useRef<HTMLDivElement>(null);
+
+  // Auto-close the menu whenever the route changes
+  useEffect(() => {
+    setToggled(false);
+  }, [pathname]);
 
   const handleToggle = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -26,6 +34,19 @@ export default function HamburgerMenu({
   };
 
   const closeMenu = () => setToggled(false);
+
+  const handleForceNavigate = (href: string) => (e: React.MouseEvent) => {
+    e.preventDefault();
+    setToggled(false);
+    // If already on the target page, a plain <a> won't reload —
+    // force a full page load so the useEffect re-runs with the hash.
+    if (window.location.pathname === new URL(href, window.location.origin).pathname) {
+      window.location.hash = new URL(href, window.location.origin).hash;
+      window.location.reload();
+    } else {
+      window.location.href = href;
+    }
+  };
 
   /* Animate the ice freeze effect when nav opens/closes */
   useEffect(() => {
@@ -132,10 +153,14 @@ export default function HamburgerMenu({
         </div>
 
         <ul>
-          {NAV_LINKS.map(({ href, label }) => (
+          {NAV_LINKS.map(({ href, label, forceReload }) => (
             <li key={label}>
               {href.startsWith("#") ? (
                 <a href={href} onClick={closeMenu}>
+                  <span>{label}</span>
+                </a>
+              ) : forceReload ? (
+                <a href={href} onClick={handleForceNavigate(href)}>
                   <span>{label}</span>
                 </a>
               ) : (
