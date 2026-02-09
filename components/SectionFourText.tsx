@@ -56,7 +56,7 @@ export default function SectionFourText() {
   return (
     <div
       ref={textRef}
-      className="fixed inset-0 flex items-end justify-center pb-[12vh] xl:pb-[6vh] z-[40] pointer-events-none"
+      className="section-four-drops fixed inset-0 flex items-end justify-center pb-[12vh] xl:pb-[6vh] z-[40] pointer-events-none"
       style={{ opacity: 0, ...textStyle }}
     >
       <Link

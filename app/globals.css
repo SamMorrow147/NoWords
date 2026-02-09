@@ -342,3 +342,29 @@ body {
   overflow: hidden;
   mix-blend-mode: screen;
 }
+
+/* You BETcha — BET white stroke: thinner on mobile */
+.section-two-bet-stroke {
+  -webkit-text-stroke: 2px white;
+}
+@media (max-width: 768px) {
+  .section-two-bet-stroke {
+    -webkit-text-stroke: 0.5px white;
+  }
+}
+
+/* You BETcha — image fill: zoom in more on mobile, show bottom of image */
+@media (max-width: 768px) {
+  .section-two-image-fill {
+    background-size: 320% !important;
+    background-position: center bottom !important;
+  }
+}
+
+/* Drops link — much bigger on mobile */
+@media (max-width: 768px) {
+  .section-four-drops,
+  .section-four-drops a {
+    font-size: clamp(7rem, 24vw, 14rem) !important;
+  }
+}

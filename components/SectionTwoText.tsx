@@ -98,9 +98,9 @@ export default function SectionTwoText() {
           cha!
         </span>
       </div>
-      {/* Image fill layer (front) — "BET" has white stroke only */}
+      {/* Image fill layer (front) — "BET" has white stroke; mobile: thinner stroke, more zoom */}
       <div
-        className="absolute inset-0 flex items-end justify-center pb-[8vh] xl:pb-[3vh]"
+        className="section-two-image-fill absolute inset-0 flex items-end justify-center pb-[8vh] xl:pb-[3vh]"
         style={{
           ...sharedFont,
           backgroundImage:
@@ -114,12 +114,7 @@ export default function SectionTwoText() {
         }}
       >
         you{" "}
-        <span
-          style={{
-            WebkitTextStroke: "2px white",
-            paintOrder: "stroke fill",
-          }}
-        >
+        <span className="section-two-bet-stroke" style={{ paintOrder: "stroke fill" }}>
           BET
         </span>
         cha!
