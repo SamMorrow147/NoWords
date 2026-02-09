@@ -19,8 +19,8 @@ const kronaOne = Krona_One({
   subsets: ["latin"],
 });
 
-// Image used for link previews (iMessage, Facebook, etc.) — section 3 background (necklace)
-const SHARE_IMAGE = "/freepik__close-up-product-shot-of-this-necklace-swinging-ou__60531.png";
+// Image used for link previews (iMessage, Facebook, etc.) — metal section background (earrings / woman)
+const SHARE_IMAGE = "/freepik__a-product-shot-of-earrings-on-a-beautiful-ethnic-w__60530.png";
 
 // Required for social crawlers to resolve the share image to an absolute URL
 function getBaseUrl() {
