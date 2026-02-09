@@ -105,7 +105,7 @@ export default function SectionTwoText() {
           ...sharedFont,
           backgroundImage:
             "url('/freepik__a-young-ethnic-woman-in-a-purple-shirt-and-winter-__60532.png')",
-          backgroundSize: "cover",
+          backgroundSize: "118%",
           backgroundPosition: "center",
           backgroundClip: "text",
           WebkitBackgroundClip: "text",

@@ -174,9 +174,9 @@ body {
   pointer-events: none;
   transition: opacity 0.3s ease;
 }
-.drops-panel:has(.drops-item.active) .drops-active-backdrop {
+.drops-active-backdrop.drops-active-backdrop-visible {
   opacity: 1;
-  pointer-events: auto;
+  pointer-events: none; /* clicks pass through so user can click other cards or panel to close */
 }
 
 /* Drops nav header (logo) stays above the dark backdrop so it stays visible */

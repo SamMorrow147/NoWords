@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 import { Draggable } from "gsap/all";
@@ -69,6 +69,9 @@ export default function DropsPage() {
   const itemEls = useRef<(HTMLDivElement | null)[]>([]);
   const activeRef = useRef<number | null>(null);
   const spacerRef = useRef<HTMLDivElement | null>(null);
+  const [backdropVisible, setBackdropVisible] = useState(false);
+  const setBackdropRef = useRef(setBackdropVisible);
+  setBackdropRef.current = setBackdropVisible;
 
   useEffect(() => {
     const panel = panelRef.current;
@@ -189,7 +192,7 @@ export default function DropsPage() {
         left: rect.left - panelRect.left,
         width: rect.width,
         height: rect.height,
-        zIndex: 1000,
+        zIndex: 1001,
         overflow: "visible",
         borderRadius: 12,
         boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
@@ -215,6 +218,7 @@ export default function DropsPage() {
         boxShadow: "0 -8px 30px rgba(0,0,0,0.3)",
         onComplete: () => {
           item.classList.add("active");
+          setBackdropRef.current(true);
           isAnimating = false;
         },
       }, 0);
@@ -283,6 +287,7 @@ export default function DropsPage() {
       }
       spacerRef.current = null;
       activeRef.current = null;
+      setBackdropRef.current(false);
       isAnimating = false;
     }
 
@@ -339,6 +344,7 @@ export default function DropsPage() {
           spacer.parentNode?.removeChild(spacer);
           spacerRef.current = null;
           activeRef.current = null;
+          setBackdropRef.current(false);
           isAnimating = false;
         },
       }, 0);
@@ -385,6 +391,10 @@ export default function DropsPage() {
         },
         onDragEnd() {
           const x = this.x;
+          const startX = snapPoints[currentSnapIdx];
+          const dragDistance = Math.abs(x - startX);
+          // If user barely moved, treat as click so the upcoming click event can open the product
+          if (dragDistance < 15) wasDragging = false;
           const nearestIdx = getSnapIndexAfterDrag(x);
           currentSnapIdx = nearestIdx;
           gsap.to(cards, {
@@ -444,7 +454,16 @@ export default function DropsPage() {
 
       if (activeRef.current === idx) {
         deactivate();
-      } else if (activeRef.current === null) {
+      } else if (activeRef.current !== null) {
+        // Another product is open: close it, then open the clicked one
+        const targetIdx = idx;
+        deactivate();
+        setTimeout(() => {
+          if (panel && itemEls.current[targetIdx] && activeRef.current === null) {
+            activate(targetIdx);
+          }
+        }, 550);
+      } else {
         activate(idx);
       }
     }
@@ -568,8 +587,11 @@ export default function DropsPage() {
         ref={panelRef}
         className="drops-panel relative z-10 w-full h-full overflow-visible cursor-grab active:cursor-grabbing select-none"
       >
-        {/* Dark backdrop when a product is open – makes the product pop */}
-        <div className="drops-active-backdrop" aria-hidden />
+        {/* Dark backdrop – only visible when JS says a product is open (avoids stuck state) */}
+        <div
+          className={`drops-active-backdrop ${backdropVisible ? "drops-active-backdrop-visible" : ""}`}
+          aria-hidden
+        />
         {/* Header */}
         <header className="relative z-20 flex justify-center items-center px-4 py-3 text-white bg-black/20 backdrop-blur-sm overflow-visible">
           <a href="/" className="flex justify-center items-center overflow-visible" aria-label="Cold Culture home">

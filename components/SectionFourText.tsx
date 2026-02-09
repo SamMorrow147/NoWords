@@ -43,13 +43,13 @@ export default function SectionFourText() {
     fontWeight: 600,
     transform: "translateZ(0) rotate(-4deg)",
     backgroundImage: `url(${SECTION_FOUR_IMAGE})`,
-    backgroundSize: "cover",
-    backgroundPosition: "center",
+    backgroundSize: "280%",
+    backgroundPosition: "center 82%",
     backgroundClip: "text",
     WebkitBackgroundClip: "text",
     color: "transparent",
     WebkitTextFillColor: "transparent",
-    WebkitTextStroke: "1.5px white",
+    WebkitTextStroke: "0.5px white",
     paintOrder: "stroke fill",
   };
 

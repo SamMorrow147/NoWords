@@ -26,6 +26,7 @@ export default function Home() {
   const sectionTwoBgRef = useRef<HTMLDivElement>(null);
   const sectionThreeBgRef = useRef<HTMLDivElement>(null);
   const sectionFourBgRef = useRef<HTMLDivElement>(null);
+  const beanieRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     // Start snow after logo animation completes (0.4s delay + 2.2s duration = 2.6s)
@@ -94,6 +95,32 @@ export default function Home() {
     };
   }, []);
 
+  // Beanie: falls from top to center as you scroll between section 3 and 4 (into section 4)
+  useEffect(() => {
+    const beanie = beanieRef.current;
+    const sectionFour = document.getElementById("section-four");
+    if (!beanie || !sectionFour) return;
+
+    gsap.set(beanie, { xPercent: -50, yPercent: -50, y: "-100vh", force3D: true });
+
+    const tl = gsap.timeline({
+      scrollTrigger: {
+        trigger: sectionFour,
+        start: "top bottom",
+        end: "top -80%",  // longer scroll range = slower drop
+        scrub: true,
+        invalidateOnRefresh: true,
+      },
+    });
+
+    tl.to(beanie, { xPercent: -50, yPercent: -50, y: "-12vh", ease: "none", force3D: true });
+
+    return () => {
+      tl.scrollTrigger?.kill();
+      tl.kill();
+    };
+  }, []);
+
   // Section 4: section 3 (necklace) scrolls up to reveal screen-printing image
   useEffect(() => {
     const sectionThreeBg = sectionThreeBgRef.current;
@@ -154,6 +181,23 @@ export default function Home() {
         }}
         aria-hidden
       />
+      {/* Beanie: falls from top to center as section 3 scrolls up */}
+      <div
+        ref={beanieRef}
+        className="fixed left-1/2 top-1/2 w-[min(85vw,420px)] aspect-[1] pointer-events-none z-10"
+        style={{
+          willChange: "transform",
+          filter: "drop-shadow(0 12px 24px rgba(0,0,0,0.35))",
+        }}
+        aria-hidden
+      >
+        <img
+          src="/freepik__a-black-beanie-product-image-on-a-white-background__36577.png"
+          alt=""
+          className="w-full h-full object-contain"
+          draggable={false}
+        />
+      </div>
       {/* Section 2: fog along bottom + "You Betcha!" text */}
       <SectionTwoFog />
       <SectionTwoText />
