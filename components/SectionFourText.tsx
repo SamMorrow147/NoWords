@@ -15,26 +15,27 @@ export default function SectionFourText() {
   useEffect(() => {
     const el = textRef.current;
     const sectionFour = document.getElementById("section-four");
-    if (!el || !sectionFour) return;
+    const sectionFive = document.getElementById("section-five");
+    if (!el || !sectionFour || !sectionFive) return;
 
     gsap.set(el, { opacity: 0 });
 
-    // Fade in after the fog (same pattern as section 2)
-    const tl = gsap.timeline({
-      scrollTrigger: {
-        trigger: sectionFour,
-        start: "top -5%",
-        end: "top -25%",
-        scrub: 1,
+    // Section 4: drops text fades in as the hat is falling (starts when section 4 enters, after fog)
+    const st4 = ScrollTrigger.create({
+      id: "section-four-drops",
+      trigger: sectionFour,
+      start: "top 60%",
+      end: "top -10%",
+      scrub: 1,
+      onUpdate: (self) => {
+        const s5Rect = sectionFive.getBoundingClientRect();
+        if (s5Rect.top < window.innerHeight) return; // section 5 in view — let section 5 trigger handle opacity
+        el.style.opacity = String(self.progress);
       },
     });
 
-    tl.to(el, { opacity: 1, ease: "power1.inOut" });
-
-    return () => {
-      tl.scrollTrigger?.kill();
-      tl.kill();
-    };
+    // Section 5: dissolve drops text sooner so it’s gone with the section 4 image
+    return () => st4.kill();
   }, []);
 
   const textStyle = {

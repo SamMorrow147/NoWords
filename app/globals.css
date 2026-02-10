@@ -86,6 +86,21 @@ body {
   100% { background-position: -100% 0; }
 }
 
+/* Section 5: rain-on-window effect — drops streak down (no rotateY so they stay visible) */
+@keyframes rain-streaking {
+  from {
+    opacity: 0;
+    transform: translateY(0);
+  }
+  5% {
+    opacity: 0.5;
+  }
+  to {
+    opacity: 0.5;
+    transform: translateY(100vh);
+  }
+}
+
 /* Drops page: use inset only (no height) so mobile viewport is correct */
 .drops-page-root {
   position: fixed;

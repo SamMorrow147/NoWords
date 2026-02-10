@@ -17,6 +17,8 @@ import SectionThreeFoggyCorner from "@/components/SectionThreeFoggyCorner";
 import SectionThreeText from "@/components/SectionThreeText";
 import HomepageTopIce from "@/components/HomepageTopIce";
 import HeroScrollIce from "@/components/HeroScrollIce";
+import RainEffect from "@/components/RainEffect";
+import SectionFiveFoggyCorner from "@/components/SectionFiveFoggyCorner";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -26,11 +28,19 @@ export default function Home() {
   const sectionTwoBgRef = useRef<HTMLDivElement>(null);
   const sectionThreeBgRef = useRef<HTMLDivElement>(null);
   const sectionFourBgRef = useRef<HTMLDivElement>(null);
+  const sectionFiveBgRef = useRef<HTMLDivElement>(null);
+  const rainContainerRef = useRef<HTMLDivElement>(null);
   const beanieRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     // Start snow after logo animation completes (0.4s delay + 2.2s duration = 2.6s)
     const timer = setTimeout(() => {
+      const sectionFive = document.getElementById("section-five");
+      if (sectionFive) {
+        const rect = sectionFive.getBoundingClientRect();
+        // If already scrolled to the last section, don't start snow (e.g. after refresh at bottom)
+        if (rect.top < window.innerHeight * 0.75) return;
+      }
       setShowSnow(true);
     }, 2700);
 
@@ -146,6 +156,70 @@ export default function Home() {
     };
   }, []);
 
+  // Section 5: dissolve section 4 content (image, hat, fog, drops text, ice) and reveal section 5 image in one timeline.
+  useEffect(() => {
+    const sectionFourBg = sectionFourBgRef.current;
+    const sectionFiveBg = sectionFiveBgRef.current;
+    const beanie = beanieRef.current;
+    const sectionFive = document.getElementById("section-five");
+    if (!sectionFourBg || !sectionFiveBg || !beanie || !sectionFive) return;
+
+    const fog = document.querySelector(".section-four-fog") as HTMLElement | null;
+    const dropsText = document.querySelector(".section-four-drops") as HTMLElement | null;
+    const topOverlay = document.querySelector(".homepage-top-overlay") as HTMLElement | null;
+    const heroScrollIce = document.querySelector(".hero-scroll-ice") as HTMLElement | null;
+
+    const tl = gsap.timeline({
+      scrollTrigger: {
+        trigger: sectionFive,
+        start: "top bottom",
+        end: "top 45%",
+        scrub: true,
+      },
+    });
+
+    // All at position 0: fade out section 4 layers + frost overlays, fade in section 5 (last image only).
+    // Fog and drops text fade out over the same longer range so they don’t disappear instantly.
+    tl.to(sectionFourBg, { opacity: 0, ease: "none" }, 0);
+    tl.to(beanie, { opacity: 0, ease: "none" }, 0);
+    if (fog) tl.to(fog, { opacity: 0, ease: "none" }, 0);
+    if (dropsText) tl.to(dropsText, { opacity: 0, ease: "none" }, 0);
+    if (topOverlay) tl.to(topOverlay, { opacity: 0, ease: "none" }, 0);
+    if (heroScrollIce) tl.to(heroScrollIce, { opacity: 0, ease: "none" }, 0);
+    tl.to(sectionFiveBg, { opacity: 1, ease: "none" }, 0);
+    const rainContainer = rainContainerRef.current;
+    if (rainContainer) tl.to(rainContainer, { opacity: 1, ease: "none" }, 0);
+
+    return () => {
+      tl.scrollTrigger?.kill();
+      tl.kill();
+    };
+  }, []);
+
+  // Section 5: stop snow when you reach the bottom (fade out with the rest of the dissolve).
+  useEffect(() => {
+    if (!showSnow) return;
+    const snow = snowRef.current;
+    const sectionFive = document.getElementById("section-five");
+    if (!snow || !sectionFive) return;
+
+    const tl = gsap.timeline({
+      scrollTrigger: {
+        trigger: sectionFive,
+        start: "top bottom",
+        end: "top 45%",
+        scrub: true,
+      },
+    });
+
+    tl.to(snow, { opacity: 0, ease: "none" });
+
+    return () => {
+      tl.scrollTrigger?.kill();
+      tl.kill();
+    };
+  }, [showSnow]);
+
   return (
     <div className="min-h-screen bg-[#1b001b]">
       {/* Section 2 background — hidden at first, fades in; later slides right to reveal section 3 */}
@@ -176,11 +250,33 @@ export default function Home() {
         className="fixed inset-0 w-full h-full bg-cover bg-center bg-no-repeat"
         style={{
           backgroundImage: `url('/freepik__an-image-outside-in-a-blizzard-at-a-big-box-of-the__64105.png')`,
+          zIndex: 1,
+          opacity: 0,
+        }}
+        aria-hidden
+      />
+      {/* Section 5 background — only visible after section 4 content dissolves (last image only) */}
+      <div
+        ref={sectionFiveBgRef}
+        className="fixed inset-0 w-full h-full bg-cover bg-center bg-no-repeat"
+        style={{
+          backgroundImage: `url('/freepik__can-you-give-me-an-image-of-a-lifestyle-brand-prod__50246.png')`,
           zIndex: 0,
           opacity: 0,
         }}
         aria-hidden
       />
+      {/* Section 5: rain effect on the last section only (no buttons/containers) */}
+      <div
+        ref={rainContainerRef}
+        className="fixed inset-0 pointer-events-none"
+        style={{ zIndex: 5, opacity: 0 }}
+        aria-hidden
+      >
+        <RainEffect />
+      </div>
+      {/* Section 5: foggy bottom-right + socials (same image/style as other fog corners) */}
+      <SectionFiveFoggyCorner />
       {/* Beanie: falls from top to center as section 3 scrolls up */}
       <div
         ref={beanieRef}
@@ -250,6 +346,9 @@ export default function Home() {
       </section>
       {/* Section 4 — scrolling into this slides section 3 (necklace) up, revealing screen-printing image */}
       <section id="section-four" className="relative min-h-[200vh]">
+      </section>
+      {/* Section 5 — scrolling into this dissolves section 4; minimal extra scroll so it stops after icons appear */}
+      <section id="section-five" className="relative min-h-[100vh]">
       </section>
     </div>
   );
