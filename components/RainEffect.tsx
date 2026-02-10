@@ -130,12 +130,12 @@ export default function RainEffect() {
         .rain-glass .raindrop--falling {
           opacity: 1;
           transform: scale(1);
-          top: 105vh;
+          top: -10vh;
           animation: fallDown var(--duration) linear var(--delay) infinite;
         }
         @keyframes fallDown {
           to {
-            transform: translate(-55vh, -100vh) scale(1);
+            transform: translate(18vh, 100vh) scale(1);
           }
         }
         @media (max-width: 768px) {

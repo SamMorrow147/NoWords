@@ -100,11 +100,11 @@ export default function SectionFiveFoggyCorner() {
           }}
         />
       </div>
-      {/* Socials — left on mobile, right on md+ */}
+      {/* Socials — left on mobile, right on md+; z-index above section 3/4 text so taps hit icons not metal/drops */}
       <div
         ref={socialsRef}
-        className="fixed bottom-0 left-0 right-auto flex items-center gap-6 pb-6 pl-6 pr-6 md:left-auto md:right-0 md:pl-0 md:pr-8 md:pb-8 pointer-events-auto"
-        style={{ zIndex: 10, opacity: 0 }}
+        className="fixed bottom-0 left-0 right-auto flex items-center gap-6 pb-6 pl-6 pr-6 md:left-auto md:right-0 md:pl-0 md:pr-8 md:pb-8 pointer-events-auto z-[50]"
+        style={{ opacity: 0 }}
         aria-label="Social links"
       >
         <a

@@ -18,6 +18,7 @@ import SectionThreeText from "@/components/SectionThreeText";
 import HomepageTopIce from "@/components/HomepageTopIce";
 import HeroScrollIce from "@/components/HeroScrollIce";
 import RainEffect from "@/components/RainEffect";
+import SmokeEffect from "@/components/SmokeEffect";
 import SectionFiveFoggyCorner from "@/components/SectionFiveFoggyCorner";
 
 gsap.registerPlugin(ScrollTrigger);
@@ -273,6 +274,7 @@ export default function Home() {
         style={{ zIndex: 5, opacity: 0 }}
         aria-hidden
       >
+        <SmokeEffect />
         <RainEffect />
       </div>
       {/* Section 5: foggy bottom-right + socials (same image/style as other fog corners) */}
