@@ -17,7 +17,6 @@ import SectionThreeFoggyCorner from "@/components/SectionThreeFoggyCorner";
 import SectionThreeText from "@/components/SectionThreeText";
 import HomepageTopIce from "@/components/HomepageTopIce";
 import HeroScrollIce from "@/components/HeroScrollIce";
-import RainEffect from "@/components/RainEffect";
 import SmokeEffect from "@/components/SmokeEffect";
 import SectionFiveFoggyCorner from "@/components/SectionFiveFoggyCorner";
 
@@ -267,7 +266,7 @@ export default function Home() {
         }}
         aria-hidden
       />
-      {/* Section 5: rain effect on the last section only (no buttons/containers) */}
+      {/* Section 5: smoke effect on the last section only */}
       <div
         ref={rainContainerRef}
         className="fixed inset-0 pointer-events-none"
@@ -275,7 +274,6 @@ export default function Home() {
         aria-hidden
       >
         <SmokeEffect />
-        <RainEffect />
       </div>
       {/* Section 5: foggy bottom-right + socials (same image/style as other fog corners) */}
       <SectionFiveFoggyCorner />

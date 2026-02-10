@@ -8,13 +8,10 @@ const MIN_SIZE = 50;
 const MAX_SIZE = 100;
 const MAX_PARTICLES = 80;
 const THICKNESS = 100;
-/** Delay before smoke starts after section 5 is in view (rain runs first to reduce load) */
-const SMOKE_START_DELAY_MS = 3000;
 
 export default function SmokeEffect() {
   const containerRef = useRef<HTMLDivElement>(null);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
-  const delayRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const currentParticlesRef = useRef(0);
 
   useEffect(() => {
@@ -52,17 +49,8 @@ export default function SmokeEffect() {
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
-          // Rain is already running; start smoke after a delay to avoid glitching
-          if (delayRef.current) return;
-          delayRef.current = setTimeout(() => {
-            delayRef.current = null;
-            startSmoke();
-          }, SMOKE_START_DELAY_MS);
+          if (!intervalRef.current) startSmoke();
         } else {
-          if (delayRef.current) {
-            clearTimeout(delayRef.current);
-            delayRef.current = null;
-          }
           if (intervalRef.current) {
             clearInterval(intervalRef.current);
             intervalRef.current = null;
@@ -75,7 +63,6 @@ export default function SmokeEffect() {
     observer.observe(sectionFive);
     return () => {
       observer.disconnect();
-      if (delayRef.current) clearTimeout(delayRef.current);
       if (intervalRef.current) clearInterval(intervalRef.current);
     };
   }, []);
