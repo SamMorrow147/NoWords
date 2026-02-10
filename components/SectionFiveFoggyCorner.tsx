@@ -19,6 +19,7 @@ export default function SectionFiveFoggyCorner() {
     let lastOpacity = 0;
 
     function tick() {
+      if (!sectionFive) return;
       const vh = window.innerHeight;
       const s5Top = sectionFive.getBoundingClientRect().top;
 
