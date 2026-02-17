@@ -36,9 +36,16 @@ export default function SectionFiveMadeByHand() {
     let lastL2val = -1;
     let lastShadowOp = -1;
 
+    // Capture non-null refs for use inside tick
+    const _container = container;
+    const _line1 = line1;
+    const _line2 = line2;
+    const _shadow = shadow;
+    const _sectionFive = sectionFive;
+
     function tick() {
       const vh = window.innerHeight;
-      const s5Top = sectionFive!.getBoundingClientRect().top;
+      const s5Top = _sectionFive.getBoundingClientRect().top;
       const s6Top = sectionSix
         ? sectionSix.getBoundingClientRect().top
         : Infinity;
@@ -80,22 +87,22 @@ export default function SectionFiveMadeByHand() {
 
       // Only update DOM when values actually change
       if (Math.abs(containerOp - lastContainerOp) > 0.003) {
-        container.style.opacity = String(containerOp);
+        _container.style.opacity = String(containerOp);
         if (containerOp <= 0.003) {
-          container.style.visibility = "hidden";
+          _container.style.visibility = "hidden";
         } else {
-          container.style.visibility = "visible";
+          _container.style.visibility = "visible";
         }
         lastContainerOp = containerOp;
       }
 
       if (Math.abs(l1val - lastL1val) > 0.1) {
-        setClip(line1, `inset(0 ${l1val}% 0 0)`);
+        setClip(_line1, `inset(0 ${l1val}% 0 0)`);
         lastL1val = l1val;
       }
 
       if (Math.abs(l2val - lastL2val) > 0.1) {
-        setClip(line2, `inset(0 ${l2val}% 0 0)`);
+        setClip(_line2, `inset(0 ${l2val}% 0 0)`);
         lastL2val = l2val;
       }
 
@@ -105,15 +112,15 @@ export default function SectionFiveMadeByHand() {
         if (visible) {
           const flicker = flickerState.value;
           if (Math.abs(flicker - lastShadowOp) > 0.005) {
-            shadow.style.opacity = String(flicker);
+            _shadow.style.opacity = String(flicker);
             lastShadowOp = flicker;
           }
         } else if (lastShadowOp !== 0) {
-          shadow.style.opacity = "0";
+          _shadow.style.opacity = "0";
           lastShadowOp = 0;
         }
       } else if (lastShadowOp !== 0) {
-        shadow.style.opacity = "0";
+        _shadow.style.opacity = "0";
         lastShadowOp = 0;
       }
 

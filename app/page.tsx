@@ -21,6 +21,7 @@ import SmokeEffect from "@/components/SmokeEffect";
 import SectionFiveFoggyCorner from "@/components/SectionFiveFoggyCorner";
 import SectionFiveMadeByHand from "@/components/SectionFiveMadeByHand";
 import FluorescentFlicker from "@/components/FluorescentFlicker";
+import SectionSixFollowSeasons from "@/components/SectionSixFollowSeasons";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -332,6 +333,8 @@ export default function Home() {
       <FluorescentFlicker />
       {/* Section 5: "Made by Hand In Minneapolis" with scroll-driven reveal */}
       <SectionFiveMadeByHand />
+      {/* Section 6: "Follow the Seasons" with scroll-driven reveal */}
+      <SectionSixFollowSeasons />
       {/* Section 6: foggy corner + socials */}
       <SectionFiveFoggyCorner />
       {/* Beanie: falls from top to center as section 3 scrolls up */}

@@ -16,6 +16,16 @@ interface Drip {
   group: number; // 0=top-left, 1=top-right, 2=bottom-left, 3=bottom-right
 }
 
+interface GraffitiDripsProps {
+  anchorClass?: string;
+  triggerSectionId?: string;
+  triggerStart?: string;
+  triggerEnd?: string;
+  groupOffsets?: number[];
+  yOffset?: number;
+  firstXNudge?: number;
+}
+
 function makeTriplet(
   anchorX: number,
   baseY: number,
@@ -53,7 +63,15 @@ function dripPath(d: Drip): string {
   return `M ${x} ${y} C ${cp1x} ${cp1y}, ${cp2x} ${cp2y}, ${x + wobble2 * 0.3} ${endY}`;
 }
 
-export default function GraffitiDrips() {
+export default function GraffitiDrips({
+  anchorClass = "graffiti-drip-anchor",
+  triggerSectionId = "section-five",
+  triggerStart = "top 60%",
+  triggerEnd = "top -30%",
+  groupOffsets = [0.48, 0.58, 0.68, 0.78],
+  yOffset = 0,
+  firstXNudge = 0,
+}: GraffitiDripsProps) {
   const svgRef = useRef<SVGSVGElement>(null);
   const pathRefs = useRef<(SVGPathElement | null)[]>([]);
   const [drips, setDrips] = useState<Drip[]>([]);
@@ -69,7 +87,7 @@ export default function GraffitiDrips() {
 
   useEffect(() => {
     function measure() {
-      const anchor = document.querySelector(".graffiti-drip-anchor");
+      const anchor = document.querySelector(`.${anchorClass}`);
       if (!anchor) return;
       const anchorRect = anchor.getBoundingClientRect();
 
@@ -79,23 +97,32 @@ export default function GraffitiDrips() {
       lines.forEach((line, lineIdx) => {
         const lineRect = line.getBoundingClientRect();
         const baseY =
-          lineRect.bottom - anchorRect.top - lineRect.height * 0.28;
+          lineRect.bottom - anchorRect.top - lineRect.height * 0.28 + yOffset;
 
         const first = line.querySelector(".drip-letter-first");
         const last = line.querySelector(".drip-letter-last");
+        const mids = line.querySelectorAll(".drip-letter-mid");
 
         if (first) {
           const r = first.getBoundingClientRect();
           const extraLeft = lineIdx === 0 ? 5 : 0;
-          const cx = r.left + r.width / 2 - anchorRect.left - 16 - extraLeft;
-          const group = lineIdx === 0 ? 0 : 2; // top-left or bottom-left
+          const cx = r.left + r.width / 2 - anchorRect.left - 16 - extraLeft + firstXNudge;
+          const group = lineIdx === 0 ? 0 : 2;
           allDrips.push(...makeTriplet(cx, baseY, "left", group));
         }
+
+        mids.forEach((mid, midIdx) => {
+          const r = mid.getBoundingClientRect();
+          const cx = r.left + r.width / 2 - anchorRect.left;
+          // Middle drips use in-between group numbers (4+)
+          const group = 4 + lineIdx * 10 + midIdx;
+          allDrips.push(...makeTriplet(cx, baseY, "left", group));
+        });
 
         if (last) {
           const r = last.getBoundingClientRect();
           const cx = r.left + r.width / 2 - anchorRect.left + 16;
-          const group = lineIdx === 0 ? 1 : 3; // top-right or bottom-right
+          const group = lineIdx === 0 ? 1 : 3;
           allDrips.push(...makeTriplet(cx, baseY, "right", group));
         }
       });
@@ -107,18 +134,16 @@ export default function GraffitiDrips() {
     measure();
     window.addEventListener("resize", measure);
     return () => window.removeEventListener("resize", measure);
-  }, []);
+  }, [anchorClass]);
 
   // Build GSAP scroll-driven timeline once drips + path refs are ready
   useEffect(() => {
     if (drips.length === 0) return;
 
-    // Wait a frame so path refs are populated
     const frameId = requestAnimationFrame(() => {
-      const sectionFive = document.getElementById("section-five");
-      if (!sectionFive) return;
+      const trigger = document.getElementById(triggerSectionId);
+      if (!trigger) return;
 
-      // Kill previous timeline
       if (tlRef.current) {
         tlRef.current.scrollTrigger?.kill();
         tlRef.current.kill();
@@ -126,16 +151,29 @@ export default function GraffitiDrips() {
 
       const tl = gsap.timeline({
         scrollTrigger: {
-          trigger: sectionFive,
-          start: "top 60%",
-          end: "top -30%",
+          trigger,
+          start: triggerStart,
+          end: triggerEnd,
           scrub: 0.5,
         },
       });
 
-      // Group order: 0=top-left, 1=top-right, 2=bottom-left, 3=bottom-right
-      // Text finishes ~0.45 of this extended range, drips start after
-      const groupStartTimes = [0.48, 0.58, 0.68, 0.78];
+      const groupStartTimes: Record<number, number> = {
+        0: groupOffsets[0] ?? 0.48,
+        1: groupOffsets[1] ?? 0.58,
+        2: groupOffsets[2] ?? 0.68,
+        3: groupOffsets[3] ?? 0.78,
+      };
+
+      // Assign start times to any extra mid groups (4+), staggered between left/right
+      const uniqueGroups = [...new Set(drips.map((d) => d.group))].sort((a, b) => a - b);
+      let nextStart = 0.53;
+      uniqueGroups.forEach((g) => {
+        if (g >= 4 && !(g in groupStartTimes)) {
+          groupStartTimes[g] = nextStart;
+          nextStart += 0.08;
+        }
+      });
 
       drips.forEach((d, i) => {
         const pathEl = pathRefs.current[i];
@@ -143,15 +181,13 @@ export default function GraffitiDrips() {
 
         const totalLen = d.length * 1.15;
 
-        // Initialize: fully hidden stroke
         gsap.set(pathEl, {
           strokeDasharray: totalLen,
           strokeDashoffset: totalLen,
           opacity: 0,
         });
 
-        const groupStart = groupStartTimes[d.group] ?? 0.25;
-        // Stagger within each triplet (index within the group's 3 drips)
+        const groupStart = groupStartTimes[d.group] ?? 0.55;
         const inGroupIdx = drips
           .filter((dd) => dd.group === d.group)
           .indexOf(d);
@@ -183,7 +219,7 @@ export default function GraffitiDrips() {
         tlRef.current.kill();
       }
     };
-  }, [drips]);
+  }, [drips, triggerSectionId, triggerStart, triggerEnd, groupOffsets]);
 
   return (
     <svg

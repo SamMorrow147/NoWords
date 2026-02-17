@@ -22,7 +22,7 @@ const kronaOne = Krona_One({
 
 // Image used for link previews (iMessage, Facebook, etc.)
 const SHARE_IMAGE_PATH =
-  "/freepik__dramatic-close-up-of-her-shirt-in-a-winter-storm__35141.png";
+  "/freepik__close-up-product-shot-of-this-necklace-swinging-ou__60531.png?v=2";
 
 // Required for social crawlers: they need a single canonical absolute URL.
 // Set NEXT_PUBLIC_SITE_URL in production to your canonical URL (e.g. https://shopcoldculture.com).

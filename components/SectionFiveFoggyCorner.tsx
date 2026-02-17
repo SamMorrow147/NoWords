@@ -16,29 +16,45 @@ export default function SectionFiveFoggyCorner() {
     if (!fog || !socials || !lastSection) return;
 
     let rafId: number;
-    let lastOpacity = 0;
+    let lastFogOp = 0;
+    let lastSocialsOp = 0;
 
     function tick() {
       if (!fog || !socials || !lastSection) return;
       const vh = window.innerHeight;
       const lastTop = lastSection.getBoundingClientRect().top;
 
+      // Fog fades in as before
       const inStart = vh * 0.75;
       const inEnd = vh * 0.4;
 
-      let opacity = 0;
+      let fogOp = 0;
       if (lastTop <= inEnd) {
-        opacity = 1;
+        fogOp = 1;
       } else if (lastTop < inStart) {
-        opacity = 1 - (lastTop - inEnd) / (inStart - inEnd);
+        fogOp = 1 - (lastTop - inEnd) / (inStart - inEnd);
       }
+      fogOp = Math.max(0, Math.min(1, fogOp));
 
-      opacity = Math.max(0, Math.min(1, opacity));
+      // Socials fade in later — after text + drips are done (section top ~15% → 0%)
+      const socialsStart = vh * 0.15;
+      const socialsEnd = vh * -0.05;
 
-      if (Math.abs(opacity - lastOpacity) > 0.001) {
-        fog.style.opacity = String(opacity);
-        socials.style.opacity = String(opacity);
-        lastOpacity = opacity;
+      let socialsOp = 0;
+      if (lastTop <= socialsEnd) {
+        socialsOp = 1;
+      } else if (lastTop < socialsStart) {
+        socialsOp = 1 - (lastTop - socialsEnd) / (socialsStart - socialsEnd);
+      }
+      socialsOp = Math.max(0, Math.min(1, socialsOp));
+
+      if (Math.abs(fogOp - lastFogOp) > 0.001) {
+        fog.style.opacity = String(fogOp);
+        lastFogOp = fogOp;
+      }
+      if (Math.abs(socialsOp - lastSocialsOp) > 0.001) {
+        socials.style.opacity = String(socialsOp);
+        lastSocialsOp = socialsOp;
       }
 
       rafId = requestAnimationFrame(tick);

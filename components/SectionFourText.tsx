@@ -17,15 +17,19 @@ export default function SectionFourText() {
     let rafId: number;
     let lastOp = -1;
 
+    const _el = el;
+    const _s4 = sectionFour;
+    const _s5 = sectionFive;
+
     function tick() {
       const vh = window.innerHeight;
-      const s4Top = sectionFour!.getBoundingClientRect().top;
-      const s5Top = sectionFive!.getBoundingClientRect().top;
+      const s4Top = _s4.getBoundingClientRect().top;
+      const s5Top = _s5.getBoundingClientRect().top;
 
       // Don't show once section 5 is in view
       if (s5Top < vh) {
         if (lastOp !== 0) {
-          el.style.opacity = "0";
+          _el.style.opacity = "0";
           lastOp = 0;
         }
         rafId = requestAnimationFrame(tick);
@@ -41,7 +45,7 @@ export default function SectionFourText() {
       );
 
       if (Math.abs(progress - lastOp) > 0.003) {
-        el.style.opacity = String(progress);
+        _el.style.opacity = String(progress);
         lastOp = progress;
       }
 
