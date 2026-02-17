@@ -73,7 +73,7 @@ export default function ScrollBackground({
   return (
     <div
       ref={bgRef}
-      className="fixed inset-0 w-full h-full bg-cover bg-center bg-no-repeat"
+      className="hero-bg-fix fixed inset-0 w-full h-full bg-cover bg-center bg-no-repeat"
       style={{
         backgroundImage: `url(${imagePath})`,
         zIndex: 1,

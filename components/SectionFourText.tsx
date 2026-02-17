@@ -2,10 +2,6 @@
 
 import { useEffect, useRef } from "react";
 import Link from "next/link";
-import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
-
-gsap.registerPlugin(ScrollTrigger);
 
 const SECTION_FOUR_IMAGE = "/freepik__an-image-outside-in-a-blizzard-at-a-big-box-of-the__64105.png";
 
@@ -18,31 +14,49 @@ export default function SectionFourText() {
     const sectionFive = document.getElementById("section-five");
     if (!el || !sectionFour || !sectionFive) return;
 
-    gsap.set(el, { opacity: 0 });
+    let rafId: number;
+    let lastOp = -1;
 
-    // Section 4: drops text fades in as the hat is falling (starts when section 4 enters, after fog)
-    const st4 = ScrollTrigger.create({
-      id: "section-four-drops",
-      trigger: sectionFour,
-      start: "top 60%",
-      end: "top -10%",
-      scrub: 1,
-      onUpdate: (self) => {
-        const s5Rect = sectionFive.getBoundingClientRect();
-        if (s5Rect.top < window.innerHeight) return; // section 5 in view — let section 5 trigger handle opacity
-        el.style.opacity = String(self.progress);
-      },
-    });
+    function tick() {
+      const vh = window.innerHeight;
+      const s4Top = sectionFour!.getBoundingClientRect().top;
+      const s5Top = sectionFive!.getBoundingClientRect().top;
 
-    // Section 5: dissolve drops text sooner so it’s gone with the section 4 image
-    return () => st4.kill();
+      // Don't show once section 5 is in view
+      if (s5Top < vh) {
+        if (lastOp !== 0) {
+          el.style.opacity = "0";
+          lastOp = 0;
+        }
+        rafId = requestAnimationFrame(tick);
+        return;
+      }
+
+      // Fade in: section-four top goes from 60% → -10% of vh
+      const inStart = vh * 0.6;
+      const inEnd = vh * -0.1;
+      const progress = Math.max(
+        0,
+        Math.min(1, (inStart - s4Top) / (inStart - inEnd))
+      );
+
+      if (Math.abs(progress - lastOp) > 0.003) {
+        el.style.opacity = String(progress);
+        lastOp = progress;
+      }
+
+      rafId = requestAnimationFrame(tick);
+    }
+
+    rafId = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(rafId);
   }, []);
 
   const textStyle = {
     fontFamily: "'Abject Failure', sans-serif",
     fontSize: "clamp(4rem, 15vw, 12rem)",
     fontWeight: 600,
-    transform: "translateZ(0) rotate(-4deg)",
+    transform: "rotate(-4deg)",
     backgroundImage: `url(${SECTION_FOUR_IMAGE})`,
     backgroundSize: "280%",
     backgroundPosition: "center 82%",

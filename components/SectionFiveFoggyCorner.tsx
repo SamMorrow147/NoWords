@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from "react";
 
-const SECTION_FIVE_IMAGE =
+const SECTION_LAST_IMAGE =
   "/freepik__can-you-give-me-an-image-of-a-lifestyle-brand-prod__50246.png";
 
 export default function SectionFiveFoggyCorner() {
@@ -12,25 +12,25 @@ export default function SectionFiveFoggyCorner() {
   useEffect(() => {
     const fog = fogRef.current;
     const socials = socialsRef.current;
-    const sectionFive = document.getElementById("section-five");
-    if (!fog || !socials || !sectionFive) return;
+    const lastSection = document.getElementById("section-six");
+    if (!fog || !socials || !lastSection) return;
 
     let rafId: number;
     let lastOpacity = 0;
 
     function tick() {
-      if (!fog || !socials || !sectionFive) return;
+      if (!fog || !socials || !lastSection) return;
       const vh = window.innerHeight;
-      const s5Top = sectionFive.getBoundingClientRect().top;
+      const lastTop = lastSection.getBoundingClientRect().top;
 
       const inStart = vh * 0.75;
       const inEnd = vh * 0.4;
 
       let opacity = 0;
-      if (s5Top <= inEnd) {
+      if (lastTop <= inEnd) {
         opacity = 1;
-      } else if (s5Top < inStart) {
-        opacity = 1 - (s5Top - inEnd) / (inStart - inEnd);
+      } else if (lastTop < inStart) {
+        opacity = 1 - (lastTop - inEnd) / (inStart - inEnd);
       }
 
       opacity = Math.max(0, Math.min(1, opacity));
@@ -74,7 +74,7 @@ export default function SectionFiveFoggyCorner() {
           style={{
             position: "absolute",
             inset: 0,
-            backgroundImage: `url(${SECTION_FIVE_IMAGE})`,
+            backgroundImage: `url(${SECTION_LAST_IMAGE})`,
             backgroundSize: "cover",
             backgroundPosition: "center",
             filter: "blur(50px)",
@@ -100,7 +100,7 @@ export default function SectionFiveFoggyCorner() {
           }}
         />
       </div>
-      {/* Socials — left on mobile, right on md+; z-index above section 3/4 text so taps hit icons not metal/drops */}
+      {/* Socials — left on mobile, right on md+; z-index above section 3/4 text */}
       <div
         ref={socialsRef}
         className="fixed bottom-0 left-0 right-auto flex items-center gap-6 pb-6 pl-6 pr-6 md:left-auto md:right-0 md:pl-0 md:pr-8 md:pb-8 pointer-events-auto z-[50]"

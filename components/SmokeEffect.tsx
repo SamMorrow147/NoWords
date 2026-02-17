@@ -16,8 +16,8 @@ export default function SmokeEffect() {
 
   useEffect(() => {
     const container = containerRef.current;
-    const sectionFive = document.getElementById("section-five");
-    if (!container || !sectionFive) return;
+    const lastSection = document.getElementById("section-six");
+    if (!container || !lastSection) return;
 
     const startSmoke = () => {
       currentParticlesRef.current = 0;
@@ -60,7 +60,7 @@ export default function SmokeEffect() {
       { threshold: 0.25 }
     );
 
-    observer.observe(sectionFive);
+    observer.observe(lastSection);
     return () => {
       observer.disconnect();
       if (intervalRef.current) clearInterval(intervalRef.current);

@@ -13,6 +13,8 @@ const FINAL_OFFSET = 24;
 export default function LogoHero() {
   const wrapperRef = useRef<HTMLDivElement>(null);
   const [inSectionFour, setInSectionFour] = useState(false);
+  const [inSectionFive, setInSectionFive] = useState(false);
+  const [inLastSection, setInLastSection] = useState(false);
 
   useEffect(() => {
     const wrapper = wrapperRef.current;
@@ -61,7 +63,7 @@ export default function LogoHero() {
     };
   }, []);
 
-  // In section four (latest drops): switch to purple gradient shimmer logo
+  // In section four (drops): switch to purple gradient shimmer logo
   useEffect(() => {
     const sectionFour = document.getElementById("section-four");
     if (!sectionFour) return;
@@ -72,6 +74,38 @@ export default function LogoHero() {
       end: "top -10%",
       onEnter: () => setInSectionFour(true),
       onLeaveBack: () => setInSectionFour(false),
+    });
+
+    return () => trigger.kill();
+  }, []);
+
+  // In section five: white logo
+  useEffect(() => {
+    const sectionFive = document.getElementById("section-five");
+    if (!sectionFive) return;
+
+    const trigger = ScrollTrigger.create({
+      trigger: sectionFive,
+      start: "top 70%",
+      end: "top -10%",
+      onEnter: () => setInSectionFive(true),
+      onLeaveBack: () => setInSectionFive(false),
+    });
+
+    return () => trigger.kill();
+  }, []);
+
+  // In last section (section six): purple logo
+  useEffect(() => {
+    const sectionSix = document.getElementById("section-six");
+    if (!sectionSix) return;
+
+    const trigger = ScrollTrigger.create({
+      trigger: sectionSix,
+      start: "top 70%",
+      end: "top -10%",
+      onEnter: () => setInLastSection(true),
+      onLeaveBack: () => setInLastSection(false),
     });
 
     return () => trigger.kill();
@@ -96,7 +130,7 @@ export default function LogoHero() {
         <span
           style={{
             display: "block",
-            opacity: inSectionFour ? 0 : 1,
+            opacity: (inLastSection || (inSectionFour && !inSectionFive)) ? 0 : 1,
             transition: "opacity 0.35s ease",
           }}
         >
@@ -114,7 +148,7 @@ export default function LogoHero() {
           style={{
             position: "absolute",
             inset: 0,
-            opacity: inSectionFour ? 1 : 0,
+            opacity: (inLastSection || (inSectionFour && !inSectionFive)) ? 1 : 0,
             transition: "opacity 0.35s ease",
             aspectRatio: "4668 / 1022",
           }}
