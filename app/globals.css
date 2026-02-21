@@ -53,8 +53,8 @@
 }
 
 @media (max-width: 768px) {
-  .halftone-waves-dots {
-    filter: contrast(8);
+  .halftone-waves-section {
+    display: none;
   }
 }
 
