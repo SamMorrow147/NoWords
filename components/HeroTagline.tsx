@@ -96,7 +96,7 @@ export default function HeroTagline() {
   return (
     <div
       ref={containerRef}
-      className="fixed inset-0 flex items-end justify-center pb-12 z-[45] pointer-events-none"
+      className="fixed inset-0 flex items-end justify-center pb-20 md:pb-12 z-[45] pointer-events-none"
       style={{ opacity: 0, visibility: "hidden" }}
     >
       {/* Dark gradient scrim: transparent at top, dark at bottom for text legibility */}

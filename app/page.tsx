@@ -308,7 +308,7 @@ export default function Home() {
       {/* Hero: full viewport, logo centered; on scroll logo moves to top-left */}
       <section className="relative min-h-screen">
         <HalftoneWaves />
-        <ScrollBackground imagePath="/freepik__small-screen-printing-print-shop-interior-next-to-__22837.png" />
+        <ScrollBackground imagePath="/freepik__a-new-angle-of-this-print-shop-interior-next-to-sc__15802.png" />
         {/* Dark overlay to mute hero background (halftone + image); fades out on scroll */}
         <div
           ref={heroOverlayRef}

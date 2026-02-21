@@ -147,6 +147,11 @@ body {
   }
 }
 
+/* Section 4: anchor background at bottom so the bottom of the image isn't cropped */
+.section-four-bg {
+  background-position: center bottom !important;
+}
+
 /* Mobile background-position fixes: on tall/narrow phones bg-cover + bg-center crops out the subject */
 @media (max-width: 768px) {
   .hero-bg-fix {
@@ -154,9 +159,6 @@ body {
   }
   .section-three-bg {
     background-position: center top !important;
-  }
-  .section-four-bg {
-    background-position: center 40% !important;
   }
   .section-five-bg {
     background-position: center 40% !important;

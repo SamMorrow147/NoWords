@@ -9,6 +9,7 @@ gsap.registerPlugin(ScrollTrigger);
 const SCROLL_DURATION = 600;
 const FINAL_OFFSET_LEFT = 10;
 const FINAL_OFFSET_TOP = 0;
+const FINAL_OFFSET_TOP_MOBILE = 28;
 
 const GLOW_DESKTOP =
   "drop-shadow(0 0 6px rgba(65,105,225,0.95)) " +
@@ -35,8 +36,8 @@ export default function LogoHero() {
     if (!wrapper) return;
 
     const centerX = window.innerWidth / 2;
-    const centerY = window.innerHeight * 0.25;
     const isMobile = window.innerWidth < 768;
+    const centerY = window.innerHeight * (isMobile ? 0.34 : 0.25);
 
     if (glowRef.current) {
       glowRef.current.style.filter = isMobile ? GLOW_MOBILE : GLOW_DESKTOP;
@@ -90,7 +91,7 @@ export default function LogoHero() {
         },
         {
           x: FINAL_OFFSET_LEFT,
-          y: FINAL_OFFSET_TOP,
+          y: isMobile ? FINAL_OFFSET_TOP_MOBILE : FINAL_OFFSET_TOP,
           xPercent: 0,
           yPercent: 0,
           scale: isMobile ? 0.25 : 0.38,

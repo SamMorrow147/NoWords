@@ -122,7 +122,7 @@ export default function SectionTwoWhatWePrint() {
       <div className="w-full max-w-2xl mx-auto text-left">
         <h2
           ref={titleRef}
-          className="mb-10 md:mb-14 overflow-hidden whitespace-nowrap"
+          className="mb-10 md:mb-14 overflow-hidden whitespace-nowrap text-center md:text-left"
           style={{
             fontFamily: "'Abject Failure', sans-serif",
             fontWeight: 600,
@@ -130,7 +130,7 @@ export default function SectionTwoWhatWePrint() {
             fontSize: "clamp(3rem, 12vw, 6.5rem)",
           }}
         >
-        What We Print
+          What We Print
         </h2>
         <ul className="grid grid-cols-1 md:grid-cols-2 gap-x-12 md:gap-x-20 gap-y-3 list-none p-0 m-0 w-full justify-items-start">
           {ROWS.map(([left, right], rowIndex) => (
