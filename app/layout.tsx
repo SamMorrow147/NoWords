@@ -95,7 +95,7 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} ${kronaOne.variable} antialiased`}
       >
         <Script
-          src="https://www.googletagmanager.com/gtag/js?id=G-806KRJKP3G"
+          src="https://www.googletagmanager.com/gtag/js?id=G-KFDK9BN9YN"
           strategy="afterInteractive"
         />
         <Script id="google-analytics" strategy="afterInteractive">
@@ -103,7 +103,7 @@ export default function RootLayout({
             window.dataLayer = window.dataLayer || [];
             function gtag(){dataLayer.push(arguments);}
             gtag('js', new Date());
-            gtag('config', 'G-806KRJKP3G');
+            gtag('config', 'G-KFDK9BN9YN');
           `}
         </Script>
         <HamburgerMenu>{children}</HamburgerMenu>
