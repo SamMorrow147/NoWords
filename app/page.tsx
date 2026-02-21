@@ -16,14 +16,6 @@ import HalftoneWaves from "@/components/HalftoneWaves";
 
 gsap.registerPlugin(ScrollTrigger);
 
-// iOS Safari and Android Chrome batch scroll events — normalizeScroll makes
-// GSAP intercept them so scrub animations fire during momentum scroll.
-// ignoreMobileResize prevents constant refresh when the address bar shows/hides.
-if (typeof window !== "undefined") {
-  ScrollTrigger.normalizeScroll(true);
-  ScrollTrigger.config({ ignoreMobileResize: true });
-}
-
 export default function Home() {
   const sectionTwoBgRef = useRef<HTMLDivElement>(null);
   const sectionThreeBgRef = useRef<HTMLDivElement>(null);
@@ -33,6 +25,13 @@ export default function Home() {
   const beanieRef = useRef<HTMLDivElement>(null);
   const whiteFlashRef = useRef<HTMLDivElement>(null);
   const heroOverlayRef = useRef<HTMLDivElement>(null);
+
+  // iOS/Android: normalize scroll so GSAP scrub fires during momentum scroll.
+  // Must be in useEffect (not module level) to avoid SSR hydration mismatch.
+  useEffect(() => {
+    ScrollTrigger.normalizeScroll(true);
+    ScrollTrigger.config({ ignoreMobileResize: true });
+  }, []);
 
   // Hero dark overlay: fade out as we scroll into section 2
   useEffect(() => {
