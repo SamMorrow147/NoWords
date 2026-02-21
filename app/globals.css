@@ -61,10 +61,13 @@
   filter: contrast(21);
 }
 
-/* Mobile: growing circular waves (works better on mobile GPUs) */
+/* Mobile: growing circular waves rotated 90° so the pattern is denser on screen */
 @media (max-width: 768px) {
   .halftone-waves-section {
     animation: halftone-circle 7.5s linear infinite;
+  }
+  .halftone-waves-section > * {
+    transform: rotate(90deg) scale(2);
   }
   .halftone-waves-dots {
     background:
