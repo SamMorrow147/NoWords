@@ -35,6 +35,13 @@
   z-index: 0;
   place-self: stretch;
   position: relative;
+  /* Static fallback that works without @property */
+  background:
+    linear-gradient(#000, #777, #000)
+      0 0 / 100% 20vh,
+    radial-gradient(closest-side, #888, #000)
+      0 / 1em 1em space;
+  /* Animated version — overrides above when @property works */
   background:
     linear-gradient(#000, #777, #000)
       0 calc(var(--halftone-j) * 20vh) / 100% 20vh,
@@ -45,7 +52,6 @@
   filter: contrast(21);
 }
 
-/* Mobile: lower contrast so mobile GPUs can handle the compositing */
 @media (max-width: 768px) {
   .halftone-waves-dots {
     filter: contrast(8);
