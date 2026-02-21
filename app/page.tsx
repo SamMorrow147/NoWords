@@ -16,6 +16,14 @@ import HalftoneWaves from "@/components/HalftoneWaves";
 
 gsap.registerPlugin(ScrollTrigger);
 
+// iOS Safari and Android Chrome batch scroll events — normalizeScroll makes
+// GSAP intercept them so scrub animations fire during momentum scroll.
+// ignoreMobileResize prevents constant refresh when the address bar shows/hides.
+if (typeof window !== "undefined") {
+  ScrollTrigger.normalizeScroll(true);
+  ScrollTrigger.config({ ignoreMobileResize: true });
+}
+
 export default function Home() {
   const sectionTwoBgRef = useRef<HTMLDivElement>(null);
   const sectionThreeBgRef = useRef<HTMLDivElement>(null);

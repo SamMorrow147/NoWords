@@ -197,14 +197,14 @@ export default function SectionFiveFoggyCorner() {
           </div>
         </div>
       </div>
-      {/* Site credit tag — bottom-left, fades in with section text */}
+      {/* Site credit tag — bottom-right on mobile (socials are left), bottom-left on desktop */}
       <a
         ref={creditRef}
         href="https://clubhausagency.com"
         target="_blank"
         rel="noopener noreferrer"
         aria-label="Site credit: Clubhaus Agency"
-        className="fixed left-0 bottom-28 md:bottom-8 pl-6 flex items-center gap-2.5 z-[50]"
+        className="fixed right-0 bottom-28 pr-6 flex flex-row-reverse md:flex-row md:left-0 md:right-auto md:bottom-8 md:pl-6 md:pr-0 items-center gap-2.5 z-[50]"
         style={{ opacity: 0, pointerEvents: "none", textDecoration: "none" }}
       >
         <img
@@ -214,7 +214,7 @@ export default function SectionFiveFoggyCorner() {
           height={36}
           className="block w-9 h-9 flex-shrink-0"
         />
-        <div style={{ lineHeight: 1.35 }}>
+        <div style={{ lineHeight: 1.35, textAlign: "right" }} className="md:[text-align:left]">
           <div
             style={{
               fontFamily: "Helvetica, Arial, sans-serif",
