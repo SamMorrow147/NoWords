@@ -61,25 +61,28 @@
   filter: contrast(21);
 }
 
-/* Mobile: growing circular waves rotated 90° so the pattern is denser on screen */
+/* Mobile: conic ray sweep — looks good on portrait screens */
 @media (max-width: 768px) {
   .halftone-waves-section {
-    animation: halftone-circle 7.5s linear infinite;
+    animation:
+      halftone-circle 7.5s linear infinite,
+      halftone-wave 4.6s ease-out infinite alternate;
   }
   .halftone-waves-section > * {
-    transform: rotate(90deg) scale(2);
+    transform: scale(1.05);
   }
   .halftone-waves-dots {
     background:
-      repeating-radial-gradient(circle,
-        #777 -20%, #000, #777 0%),
+      conic-gradient(from 0deg, #777, #000 50%, #777),
       radial-gradient(closest-side, #888, #000)
-        0 / 1em 1em space;
+        0 / 0.5em 0.5em space;
     background:
-      repeating-radial-gradient(circle,
-        #777 calc((var(--halftone-k) - 1) * 20%), #000, #777 calc(var(--halftone-k) * 20%)),
+      conic-gradient(from calc(var(--halftone-k) * 360deg),
+        #777,
+        #000 calc(var(--halftone-j) * 50%) calc(100% - var(--halftone-j) * 50%),
+        #777),
       radial-gradient(closest-side, #888, #000)
-        0 / 1em 1em space;
+        0 / 0.5em 0.5em space;
     filter: contrast(8);
   }
 }

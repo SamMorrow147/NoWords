@@ -28,7 +28,7 @@ export default function ZoomFigure({
     const startY = vh * 1.1;
     const endX = isMobile ? vw * 0.55 : vw * 0.6;
     const endScale = isMobile ? 0.88 : 0.9;
-    const endY = isMobile ? vh : vh * 1.15;
+    const endY = vh + figH * (1 - endScale);
 
     gsap.set(figure, {
       position: "fixed",
