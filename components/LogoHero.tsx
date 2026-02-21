@@ -10,8 +10,22 @@ const SCROLL_DURATION = 600;
 const FINAL_OFFSET_LEFT = 10;
 const FINAL_OFFSET_TOP = 0;
 
+const GLOW_DESKTOP =
+  "drop-shadow(0 0 6px rgba(65,105,225,0.95)) " +
+  "drop-shadow(0 0 15px rgba(65,105,225,0.8)) " +
+  "drop-shadow(0 0 35px rgba(65,105,225,0.6)) " +
+  "drop-shadow(0 0 70px rgba(65,105,225,0.35)) " +
+  "drop-shadow(0 0 120px rgba(65,105,225,0.2))";
+
+const GLOW_MOBILE =
+  "drop-shadow(0 0 4px rgba(65,105,225,0.95)) " +
+  "drop-shadow(0 0 10px rgba(65,105,225,0.8)) " +
+  "drop-shadow(0 0 20px rgba(65,105,225,0.6)) " +
+  "drop-shadow(0 0 35px rgba(65,105,225,0.35))";
+
 export default function LogoHero() {
   const wrapperRef = useRef<HTMLDivElement>(null);
+  const glowRef = useRef<HTMLDivElement>(null);
   const [inSectionFour, setInSectionFour] = useState(false);
   const [inSectionFive, setInSectionFive] = useState(false);
   const [inLastSection, setInLastSection] = useState(false);
@@ -23,6 +37,10 @@ export default function LogoHero() {
     const centerX = window.innerWidth / 2;
     const centerY = window.innerHeight * 0.25;
     const isMobile = window.innerWidth < 768;
+
+    if (glowRef.current) {
+      glowRef.current.style.filter = isMobile ? GLOW_MOBILE : GLOW_DESKTOP;
+    }
 
     gsap.set(wrapper, {
       position: "fixed",
@@ -123,8 +141,6 @@ export default function LogoHero() {
     return () => trigger.kill();
   }, []);
 
-  const isMobileView = typeof window !== "undefined" && window.innerWidth < 768;
-
   return (
     <div 
       ref={wrapperRef} 
@@ -139,22 +155,16 @@ export default function LogoHero() {
       }} 
       aria-hidden
     >
-      <div style={{
-        position: "relative",
-        width: "100%",
-        height: "100%",
-        overflow: "visible",
-        filter: isMobileView
-          ? "drop-shadow(0 0 4px rgba(65,105,225,0.95)) " +
-            "drop-shadow(0 0 10px rgba(65,105,225,0.8)) " +
-            "drop-shadow(0 0 20px rgba(65,105,225,0.6)) " +
-            "drop-shadow(0 0 35px rgba(65,105,225,0.35))"
-          : "drop-shadow(0 0 6px rgba(65,105,225,0.95)) " +
-            "drop-shadow(0 0 15px rgba(65,105,225,0.8)) " +
-            "drop-shadow(0 0 35px rgba(65,105,225,0.6)) " +
-            "drop-shadow(0 0 70px rgba(65,105,225,0.35)) " +
-            "drop-shadow(0 0 120px rgba(65,105,225,0.2))",
-      }}>
+      <div
+        ref={glowRef}
+        style={{
+          position: "relative",
+          width: "100%",
+          height: "100%",
+          overflow: "visible",
+          filter: GLOW_DESKTOP,
+        }}
+      >
         <img
           src="/logo_vectorized.svg"
           alt="No Words"
