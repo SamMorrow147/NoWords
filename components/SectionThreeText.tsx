@@ -25,8 +25,8 @@ export default function SectionThreeText() {
         s3Top >= enterStart ? 0 : s3Top <= enterEnd ? 1 : (enterStart - s3Top) / (enterStart - enterEnd);
 
       // Disappear as section 4 approaches (section 3 scrolls up)
-      const exitStart = vh * 0.6;
-      const exitEnd = vh * 0.1;
+      const exitStart = vh * 0.85;
+      const exitEnd = vh * 0.45;
       const exitProgress =
         s4Top >= exitStart ? 0 : s4Top <= exitEnd ? 1 : (exitStart - s4Top) / (exitStart - exitEnd);
 
