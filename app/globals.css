@@ -1,7 +1,13 @@
 @import "tailwindcss";
 
-/* Halftone moving linear waves — @property for animatable custom property */
+/* Halftone — @property for animatable custom properties */
 @property --halftone-j {
+  syntax: '<number>';
+  initial-value: 0;
+  inherits: true;
+}
+
+@property --halftone-k {
   syntax: '<number>';
   initial-value: 0;
   inherits: true;
@@ -9,6 +15,10 @@
 
 @keyframes halftone-wave {
   to { --halftone-j: 1; }
+}
+
+@keyframes halftone-circle {
+  to { --halftone-k: 1; }
 }
 
 .halftone-waves-section {
@@ -31,17 +41,16 @@
   background: linear-gradient(90deg, #2D5BFF, #C13A6C, #E24A4A, #F06A2A, #F2C200);
 }
 
+/* Desktop: moving linear waves */
 .halftone-waves-dots {
   z-index: 0;
   place-self: stretch;
   position: relative;
-  /* Static fallback that works without @property */
   background:
     linear-gradient(#000, #777, #000)
       0 0 / 100% 20vh,
     radial-gradient(closest-side, #888, #000)
       0 / 1em 1em space;
-  /* Animated version — overrides above when @property works */
   background:
     linear-gradient(#000, #777, #000)
       0 calc(var(--halftone-j) * 20vh) / 100% 20vh,
@@ -52,9 +61,23 @@
   filter: contrast(21);
 }
 
+/* Mobile: growing circular waves (works better on mobile GPUs) */
 @media (max-width: 768px) {
   .halftone-waves-section {
-    display: none;
+    animation: halftone-circle 7.5s linear infinite;
+  }
+  .halftone-waves-dots {
+    background:
+      repeating-radial-gradient(circle,
+        #777 -20%, #000, #777 0%),
+      radial-gradient(closest-side, #888, #000)
+        0 / 1em 1em space;
+    background:
+      repeating-radial-gradient(circle,
+        #777 calc((var(--halftone-k) - 1) * 20%), #000, #777 calc(var(--halftone-k) * 20%)),
+      radial-gradient(closest-side, #888, #000)
+        0 / 1em 1em space;
+    filter: contrast(8);
   }
 }
 
