@@ -157,7 +157,7 @@ export default function SectionFiveFoggyCorner() {
                 style={{
                   fontFamily: '"pressio-stencil-cond", sans-serif',
                   fontWeight: 600,
-                  fontSize: "clamp(1rem, 3.5vw, 1.5rem)",
+                  fontSize: "clamp(1.25rem, 4.5vw, 1.75rem)",
                   color: "#ffffff",
                   filter: "drop-shadow(0 1px 8px rgba(0,0,0,0.9)) drop-shadow(0 2px 16px rgba(0,0,0,0.7))",
                 }}
@@ -204,7 +204,7 @@ export default function SectionFiveFoggyCorner() {
         target="_blank"
         rel="noopener noreferrer"
         aria-label="Site credit: Clubhaus Agency"
-        className="fixed right-0 bottom-28 pr-6 flex flex-row-reverse md:flex-row md:left-0 md:right-auto md:bottom-8 md:pl-6 md:pr-0 items-center gap-2.5 z-[50]"
+        className="fixed right-0 bottom-0 pb-6 pr-6 flex flex-row-reverse md:flex-row md:left-0 md:right-auto md:bottom-8 md:pb-0 md:pl-6 md:pr-0 items-center gap-2.5 z-[50]"
         style={{ opacity: 0, pointerEvents: "none", textDecoration: "none" }}
       >
         <img
