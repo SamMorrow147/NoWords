@@ -131,16 +131,19 @@ export default function LogoHero() {
         top: 0,
         left: 0,
         opacity: 0,
+        overflow: "visible",
         willChange: "transform, opacity",
-        WebkitBackfaceVisibility: "hidden",
-        WebkitPerspective: 1000,
       }} 
       aria-hidden
     >
+      {/* Padding gives the drop-shadow glow room to render without clipping */}
       <div style={{
         position: "relative",
         width: "100%",
         height: "100%",
+        padding: "40px",
+        margin: "-40px",
+        overflow: "visible",
         filter:
           "drop-shadow(0 0 6px rgba(65,105,225,0.95)) " +
           "drop-shadow(0 0 15px rgba(65,105,225,0.8)) " +
@@ -161,7 +164,7 @@ export default function LogoHero() {
           className="logo-shimmer block w-full min-h-[2rem]"
           style={{
             position: "absolute",
-            inset: 0,
+            inset: "40px",
             opacity: (inLastSection || (inSectionFour && !inSectionFive)) ? 1 : 0,
             transition: "opacity 0.35s ease",
             aspectRatio: "968 / 1074",
