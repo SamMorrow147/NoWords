@@ -137,23 +137,28 @@ export default function LogoHero() {
       }} 
       aria-hidden
     >
-      <div style={{
-        position: "relative",
-        width: "100%",
-        height: "100%",
-        overflow: "visible",
-        filter:
-          "drop-shadow(0 0 6px rgba(65,105,225,0.95)) " +
-          "drop-shadow(0 0 15px rgba(65,105,225,0.8)) " +
-          "drop-shadow(0 0 35px rgba(65,105,225,0.6)) " +
-          "drop-shadow(0 0 70px rgba(65,105,225,0.35)) " +
-          "drop-shadow(0 0 120px rgba(65,105,225,0.2))",
-      }}>
+      <div style={{ position: "relative", width: "100%", height: "100%", overflow: "visible" }}>
+        {/* Blue glow — separate element so it can't be clipped by filter compositing */}
+        <div
+          style={{
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            width: "140%",
+            height: "140%",
+            transform: "translate(-50%, -50%)",
+            borderRadius: "50%",
+            background: "radial-gradient(ellipse at center, rgba(65,105,225,0.55) 0%, rgba(65,105,225,0.3) 30%, rgba(65,105,225,0.1) 55%, transparent 75%)",
+            pointerEvents: "none",
+          }}
+          aria-hidden
+        />
         <img
           src="/logo_vectorized.svg"
           alt="No Words"
           className="block w-full h-auto"
           style={{
+            position: "relative",
             opacity: (inLastSection || (inSectionFour && !inSectionFive)) ? 0 : 1,
             transition: "opacity 0.35s ease",
           }}
