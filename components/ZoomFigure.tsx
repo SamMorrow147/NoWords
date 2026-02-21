@@ -44,6 +44,7 @@ export default function ZoomFigure({
       transformOrigin: "top left",
       zIndex: 20,
       opacity: 0,
+      visibility: "hidden",
     });
 
     const tl = gsap.timeline({
@@ -55,7 +56,7 @@ export default function ZoomFigure({
       },
     });
 
-    tl.to(figure, { opacity: 1, duration: 0.1 })
+    tl.to(figure, { opacity: 1, visibility: "visible", duration: 0.1 })
       .to(figure, { 
         x: endX, 
         y: endY, 
@@ -96,7 +97,7 @@ export default function ZoomFigure({
   return (
     <div
       ref={figureRef}
-      style={{ opacity: 0 }}
+      style={{ opacity: 0, visibility: "hidden" }}
       className="overflow-hidden"
     >
       {/* eslint-disable-next-line @next/next/no-img-element */}
