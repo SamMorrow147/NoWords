@@ -68,8 +68,8 @@ export default function HandwrittenText() {
       ref={containerRef}
       className="fixed inset-0 flex flex-col z-[45] pointer-events-none"
     >
-      <div className="flex-[0.4] md:flex-1" aria-hidden />
-      <div className="flex-[1.6] md:flex-1 flex items-center justify-center">
+      <div className="flex-[0.7] md:flex-1" aria-hidden />
+      <div className="flex-[1.3] md:flex-1 flex items-center justify-center">
         <div
           className="flex flex-col items-center text-center"
           style={{
