@@ -73,16 +73,20 @@ export default function ScrollBackground({
   return (
     <div
       ref={bgRef}
-      className="hero-bg-fix fixed inset-0 w-full h-full bg-cover bg-center bg-no-repeat"
+      className="fixed inset-0 w-full h-full"
       style={{
-        backgroundImage: `url(${imagePath})`,
         zIndex: 1,
         opacity: 0,
         willChange: "transform, opacity",
-        WebkitBackfaceVisibility: "hidden",
-        WebkitPerspective: 1000,
       }}
       aria-hidden
-    />
+    >
+      <img
+        src={imagePath}
+        alt=""
+        className="hero-bg-fix block w-full h-full object-cover"
+        draggable={false}
+      />
+    </div>
   );
 }

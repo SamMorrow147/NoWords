@@ -45,6 +45,32 @@
   filter: contrast(21);
 }
 
+/* Mobile: disable the heavy halftone compositing that kills mobile GPUs.
+   Show just the moving gradient instead (still animated via the parent). */
+@media (max-width: 768px) {
+  .halftone-waves-dots {
+    display: none;
+  }
+  .halftone-waves-gradient {
+    background: linear-gradient(
+      180deg,
+      #2D5BFF 0%,
+      #C13A6C 25%,
+      #E24A4A 50%,
+      #F06A2A 75%,
+      #F2C200 100%
+    );
+    background-size: 100% 200%;
+    animation: gradient-scroll 6s ease infinite;
+  }
+}
+
+@keyframes gradient-scroll {
+  0%   { background-position: 0% 0%; }
+  50%  { background-position: 0% 100%; }
+  100% { background-position: 0% 0%; }
+}
+
 .halftone-waves-overlay {
   grid-column: 1;
   grid-row: 1;

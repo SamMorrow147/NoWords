@@ -26,10 +26,8 @@ export default function Home() {
   const whiteFlashRef = useRef<HTMLDivElement>(null);
   const heroOverlayRef = useRef<HTMLDivElement>(null);
 
-  // iOS/Android: normalize scroll so GSAP scrub fires during momentum scroll.
-  // Must be in useEffect (not module level) to avoid SSR hydration mismatch.
+  // Prevent ScrollTrigger from recalculating when mobile address bar shows/hides
   useEffect(() => {
-    ScrollTrigger.normalizeScroll(true);
     ScrollTrigger.config({ ignoreMobileResize: true });
   }, []);
 
