@@ -3,7 +3,7 @@
 import { useEffect, useRef } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import Image from "next/image";
+
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -18,19 +18,24 @@ export default function ZoomFigure({
     const figure = figureRef.current;
     if (!figure) return;
 
-    // Calculate positions
-    const startX = window.innerWidth * 0.8; // Right side
-    const startY = window.innerHeight * 1.1; // Below viewport
-    const endX = window.innerWidth * 0.6; // Right of center
-    const endY = window.innerHeight * 1.15; // Lower - extends below viewport
+    const isMobile = window.innerWidth < 768;
+    const vw = window.innerWidth;
+    const vh = window.innerHeight;
 
-    // Start state
+    const figW = isMobile ? 720 : 900;
+    const figH = isMobile ? 960 : 1200;
+    const startX = vw * 0.8;
+    const startY = vh * 1.1;
+    const endX = isMobile ? vw * 0.55 : vw * 0.6;
+    const endScale = isMobile ? 0.88 : 0.9;
+    const endY = isMobile ? vh + figH * (1 - endScale) : vh * 1.15;
+
     gsap.set(figure, {
       position: "fixed",
       left: 0,
       top: 0,
-      width: "600px",
-      height: "800px",
+      width: `${figW}px`,
+      height: `${figH}px`,
       x: startX,
       y: startY,
       xPercent: -50,
@@ -54,15 +59,13 @@ export default function ZoomFigure({
       .to(figure, { 
         x: endX, 
         y: endY, 
-        scale: 0.9,
+        scale: endScale,
         xPercent: -50,
         yPercent: -100,
         duration: 1,
         ease: "none"
       }, 0);
 
-    // Phase 2: slide figure off to the left when scrolling into section 2
-    // This only fires when #section-two enters the viewport — well after phase 1 ends
     const sectionTwo = document.getElementById("section-two");
     let exitTl: gsap.core.Timeline | undefined;
     if (sectionTwo) {
@@ -96,13 +99,11 @@ export default function ZoomFigure({
       style={{ opacity: 0 }}
       className="overflow-hidden"
     >
-      <Image
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
         src={imagePath}
         alt="Center Figure"
-        width={600}
-        height={800}
         className="w-full h-full object-cover"
-        priority
       />
     </div>
   );

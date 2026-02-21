@@ -21,18 +21,17 @@ const kronaOne = Krona_One({
 });
 
 // Image used for link previews (iMessage, Facebook, etc.)
-const SHARE_IMAGE_PATH =
-  "/freepik__close-up-product-shot-of-this-necklace-swinging-ou__60531.png?v=2";
+const SHARE_IMAGE_PATH = "/logo_vectorized.png";
 
 // Required for social crawlers: they need a single canonical absolute URL.
-// Set NEXT_PUBLIC_SITE_URL in production to your canonical URL (e.g. https://shopcoldculture.com).
+// Set NEXT_PUBLIC_SITE_URL in production to your canonical URL (e.g. https://nowordsprintstudio.com).
 function getBaseUrl() {
   if (process.env.NEXT_PUBLIC_SITE_URL) {
     const url = process.env.NEXT_PUBLIC_SITE_URL;
     return url.startsWith("http") ? url : `https://${url}`;
   }
   if (process.env.VERCEL_URL) return `https://${process.env.VERCEL_URL}`;
-  return "https://shopcoldculture.com";
+  return "https://nowordsprintstudio.com";
 }
 
 function getShareImageUrl() {
@@ -40,40 +39,41 @@ function getShareImageUrl() {
   return `${base}${SHARE_IMAGE_PATH}`;
 }
 
-// Recommended OG size for reliable previews (Facebook, iMessage, etc.)
-const OG_IMAGE_WIDTH = 1200;
-const OG_IMAGE_HEIGHT = 630;
+// Actual dimensions of logo_vectorized.png
+const OG_IMAGE_WIDTH = 968;
+const OG_IMAGE_HEIGHT = 1074;
 
 export const metadata: Metadata = {
   metadataBase: new URL(getBaseUrl()),
-  title: "Cold Culture",
-  description: "High-end lifestyle brand",
+  title: "No Words Print Studio",
+  description: "Custom screen printing & embroidery in Minneapolis.",
   icons: {
-    icon: "/Favacon.png",
+    icon: "/logo_vectorized.svg",
+    apple: "/logo_vectorized.png",
   },
   openGraph: {
     type: "website",
-    title: "Cold Culture",
-    description: "High-end lifestyle brand",
+    title: "No Words Print Studio",
+    description: "Custom screen printing & embroidery in Minneapolis.",
     images: [
       {
         url: getShareImageUrl(),
         width: OG_IMAGE_WIDTH,
         height: OG_IMAGE_HEIGHT,
-        alt: "Cold Culture",
+        alt: "Nowords Print Studio",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Cold Culture",
-    description: "High-end lifestyle brand",
+    title: "No Words Print Studio",
+    description: "Custom screen printing & embroidery in Minneapolis.",
     images: [
       {
         url: getShareImageUrl(),
         width: OG_IMAGE_WIDTH,
         height: OG_IMAGE_HEIGHT,
-        alt: "Cold Culture",
+        alt: "Nowords Print Studio",
       },
     ],
   },
@@ -87,9 +87,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        <link rel="preload" href="/Heroimage.png" as="image" />
+        <link rel="stylesheet" href="https://use.typekit.net/bvw8ogk.css" />
         <link rel="preload" href="/CenterFigure.png" as="image" />
-        <link rel="preload" href="/ColdCulture.svg" as="image" />
+        <link rel="preload" href="/logo_vectorized.svg" as="image" />
       </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} ${kronaOne.variable} antialiased`}

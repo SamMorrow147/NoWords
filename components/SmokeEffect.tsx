@@ -12,6 +12,7 @@ const THICKNESS = 100;
 export default function SmokeEffect() {
   const containerRef = useRef<HTMLDivElement>(null);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const timeoutsRef = useRef<ReturnType<typeof setTimeout>[]>([]);
   const currentParticlesRef = useRef(0);
 
   useEffect(() => {
@@ -39,11 +40,19 @@ export default function SmokeEffect() {
         container.appendChild(smoke);
         currentParticlesRef.current = cur + 1;
 
-        setTimeout(() => {
+        const tid = setTimeout(() => {
           smoke.remove();
           currentParticlesRef.current = Math.max(0, currentParticlesRef.current - 1);
         }, LIFE);
+        timeoutsRef.current.push(tid);
       }, BIRTH_INTERVAL);
+    };
+
+    const stopSmoke = () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+        intervalRef.current = null;
+      }
     };
 
     const observer = new IntersectionObserver(
@@ -51,10 +60,7 @@ export default function SmokeEffect() {
         if (entry.isIntersecting) {
           if (!intervalRef.current) startSmoke();
         } else {
-          if (intervalRef.current) {
-            clearInterval(intervalRef.current);
-            intervalRef.current = null;
-          }
+          stopSmoke();
         }
       },
       { threshold: 0.25 }
@@ -63,7 +69,11 @@ export default function SmokeEffect() {
     observer.observe(lastSection);
     return () => {
       observer.disconnect();
-      if (intervalRef.current) clearInterval(intervalRef.current);
+      stopSmoke();
+      timeoutsRef.current.forEach((id) => clearTimeout(id));
+      timeoutsRef.current = [];
+      if (container) container.innerHTML = "";
+      currentParticlesRef.current = 0;
     };
   }, []);
 

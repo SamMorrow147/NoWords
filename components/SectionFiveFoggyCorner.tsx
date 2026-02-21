@@ -1,42 +1,47 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-
-const SECTION_LAST_IMAGE =
-  "/freepik__can-you-give-me-an-image-of-a-lifestyle-brand-prod__50246.png";
+import MaskButton from "./MaskButton";
 
 export default function SectionFiveFoggyCorner() {
-  const fogRef = useRef<HTMLDivElement>(null);
   const socialsRef = useRef<HTMLDivElement>(null);
+  const textRef = useRef<HTMLDivElement>(null);
+  const ctaBtnRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const fog = fogRef.current;
     const socials = socialsRef.current;
-    const lastSection = document.getElementById("section-six");
-    if (!fog || !socials || !lastSection) return;
+    const text = textRef.current;
+    const lastSection = document.getElementById("section-five");
+    if (!socials || !text || !lastSection) return;
 
     let rafId: number;
-    let lastFogOp = 0;
     let lastSocialsOp = 0;
+    let lastTextOp = 0;
 
     function tick() {
-      if (!fog || !socials || !lastSection) return;
+      if (!socials || !text || !lastSection) return;
       const vh = window.innerHeight;
       const lastTop = lastSection.getBoundingClientRect().top;
 
-      // Fog fades in as before
-      const inStart = vh * 0.75;
-      const inEnd = vh * 0.4;
-
-      let fogOp = 0;
-      if (lastTop <= inEnd) {
-        fogOp = 1;
-      } else if (lastTop < inStart) {
-        fogOp = 1 - (lastTop - inEnd) / (inStart - inEnd);
+      // After-school program text fades in as soon as last section enters (other content gone)
+      const textStart = vh * 1.0;
+      const textEnd = vh * 0.35;
+      let textOp = 0;
+      if (lastTop <= textEnd) {
+        textOp = 1;
+      } else if (lastTop < textStart) {
+        textOp = 1 - (lastTop - textEnd) / (textStart - textEnd);
       }
-      fogOp = Math.max(0, Math.min(1, fogOp));
+      textOp = Math.max(0, Math.min(1, textOp));
+      if (Math.abs(textOp - lastTextOp) > 0.001) {
+        text.style.opacity = String(textOp);
+        if (ctaBtnRef.current) {
+          ctaBtnRef.current.style.pointerEvents = textOp > 0.1 ? "auto" : "none";
+        }
+        lastTextOp = textOp;
+      }
 
-      // Socials fade in later — after text + drips are done (section top ~15% → 0%)
+      // Socials fade in later (section top ~15% → 0%)
       const socialsStart = vh * 0.15;
       const socialsEnd = vh * -0.05;
 
@@ -48,10 +53,6 @@ export default function SectionFiveFoggyCorner() {
       }
       socialsOp = Math.max(0, Math.min(1, socialsOp));
 
-      if (Math.abs(fogOp - lastFogOp) > 0.001) {
-        fog.style.opacity = String(fogOp);
-        lastFogOp = fogOp;
-      }
       if (Math.abs(socialsOp - lastSocialsOp) > 0.001) {
         socials.style.opacity = String(socialsOp);
         lastSocialsOp = socialsOp;
@@ -66,55 +67,63 @@ export default function SectionFiveFoggyCorner() {
 
   return (
     <>
-      <style dangerouslySetInnerHTML={{ __html: `
-        @media (max-width: 767px) {
-          .section-five-fog-mask {
-            mask-image: radial-gradient(ellipse 120% 140% at bottom left, black 0%, black 15%, rgba(0,0,0,0.7) 35%, transparent 65%);
-            -webkit-mask-image: radial-gradient(ellipse 120% 140% at bottom left, black 0%, black 15%, rgba(0,0,0,0.7) 35%, transparent 65%);
-          }
-        }
-        @media (min-width: 768px) {
-          .section-five-fog-mask {
-            mask-image: radial-gradient(ellipse 120% 140% at bottom right, black 0%, black 15%, rgba(0,0,0,0.7) 35%, transparent 65%);
-            -webkit-mask-image: radial-gradient(ellipse 120% 140% at bottom right, black 0%, black 15%, rgba(0,0,0,0.7) 35%, transparent 65%);
-          }
-        }
-      ` }} />
-      {/* Fog only — left on mobile, right on md+; z-index 4 so rain draws in front */}
+      {/* After-school program text — last section, above socials */}
       <div
-        ref={fogRef}
-        className="fixed bottom-0 left-0 right-auto w-[50vw] h-[26vh] md:left-auto md:right-0 md:w-[32vw] md:h-[30vh] pointer-events-none"
-        style={{ zIndex: 4, opacity: 0 }}
+        ref={textRef}
+        className="fixed inset-0 flex flex-col items-center justify-center px-6 pt-[20vh] pb-32 z-[45] pointer-events-none"
+        style={{ opacity: 0 }}
       >
-        <div
-          style={{
-            position: "absolute",
-            inset: 0,
-            backgroundImage: `url(${SECTION_LAST_IMAGE})`,
-            backgroundSize: "cover",
-            backgroundPosition: "center",
-            filter: "blur(50px)",
-            WebkitFilter: "blur(50px)",
-          }}
-        />
-        <div
-          className="section-five-fog-mask"
-          style={{
-            position: "absolute",
-            inset: 0,
-            backdropFilter: "blur(20px)",
-            WebkitBackdropFilter: "blur(20px)",
-            background: "rgba(255,255,255,0.12)",
-          }}
-        />
-        <div
-          className="section-five-fog-mask"
-          style={{
-            position: "absolute",
-            inset: 0,
-            background: "rgba(0,0,0,0.28)",
-          }}
-        />
+        <div className="max-w-2xl mx-auto text-center">
+          <h2
+            className="text-white mb-6 md:mb-8"
+            style={{
+              fontFamily: "'Abject Failure', sans-serif",
+              fontWeight: 600,
+              fontSize: "clamp(3rem, 11vw, 6rem)",
+              lineHeight: 1.2,
+              filter: "drop-shadow(0 2px 10px rgba(0,0,0,0.5))",
+            }}
+          >
+            Join our after school program
+          </h2>
+          <ul className="list-none p-0 m-0 text-left inline-block">
+            {[
+              "Learn real screen printing and embroidery",
+              "Create your own clothing and merch",
+              "Start your own brand ideas",
+              "Work with professional equipment",
+              "Turn creativity into real skills",
+              "Be part of a creative studio community",
+            ].map((item) => (
+              <li
+                key={item}
+                className="flex items-center gap-3 mb-2"
+                style={{
+                  fontFamily: '"pressio-stencil-cond", sans-serif',
+                  fontWeight: 600,
+                  fontSize: "clamp(1rem, 3.5vw, 1.5rem)",
+                  color: "#ffffff",
+                  filter: "drop-shadow(0 1px 6px rgba(0,0,0,0.7))",
+                }}
+              >
+                <svg
+                  viewBox="0 0 526.5 313.9"
+                  className="flex-shrink-0"
+                  style={{ width: "1.1em", height: "0.65em", color: "#dc2626" }}
+                  fill="currentColor"
+                  aria-hidden
+                >
+                  <path d="M 439.23 184.4 L 0 158.74 L 85.94 28.65 L 478.02 139.65 Z" />
+                  <path d="M 381.34 0 L 526.5 19.84 L 193.95 313.9 L 130.69 291.23 Z" />
+                </svg>
+                {item}
+              </li>
+            ))}
+          </ul>
+          <div ref={ctaBtnRef} className="flex justify-center mt-8" style={{ pointerEvents: "none" }}>
+            <MaskButton href="/contact" label="Contact" />
+          </div>
+        </div>
       </div>
       {/* Socials — left on mobile, right on md+; z-index above section 3/4 text */}
       <div
@@ -124,10 +133,10 @@ export default function SectionFiveFoggyCorner() {
         aria-label="Social links"
       >
         <a
-          href="https://www.facebook.com/profile.php?id=100090307900335"
+          href="https://www.facebook.com/profile.php?id=61576968374104"
           target="_blank"
           rel="noopener noreferrer"
-          aria-label="Cold Culture on Facebook"
+          aria-label="Nowords Print Studio on Facebook"
           className="opacity-60 transition-opacity duration-300 hover:opacity-100"
         >
           <img
@@ -139,10 +148,10 @@ export default function SectionFiveFoggyCorner() {
           />
         </a>
         <a
-          href="https://www.instagram.com/shopcoldculture"
+          href="https://www.instagram.com/mrnowords_mplstp?igsh=eWs4MXczZThoN2Vr&utm_source=qr"
           target="_blank"
           rel="noopener noreferrer"
-          aria-label="Cold Culture on Instagram"
+          aria-label="Nowords Print Studio on Instagram"
           className="opacity-60 transition-opacity duration-300 hover:opacity-100"
         >
           <img

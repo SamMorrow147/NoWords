@@ -3,12 +3,12 @@
 import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import AnimatedLogo from "./AnimatedLogo";
 
 gsap.registerPlugin(ScrollTrigger);
 
 const SCROLL_DURATION = 600;
-const FINAL_OFFSET = 24;
+const FINAL_OFFSET_LEFT = 10;
+const FINAL_OFFSET_TOP = 0;
 
 export default function LogoHero() {
   const wrapperRef = useRef<HTMLDivElement>(null);
@@ -21,49 +21,75 @@ export default function LogoHero() {
     if (!wrapper) return;
 
     const centerX = window.innerWidth / 2;
-    const centerY = window.innerHeight / 2;
+    const centerY = window.innerHeight * 0.25; // center of top half
 
     gsap.set(wrapper, {
       position: "fixed",
       top: 0,
       left: 0,
-      width: "min(90vw, 32rem)",
+      width: "min(70vw, 20rem)",
       x: centerX,
       y: centerY,
       xPercent: -50,
       yPercent: -50,
-      scale: 1,
+      scale: 0.08,
       zIndex: 30,
-      transformOrigin: "0 0",
+      transformOrigin: "center center",
       opacity: 1,
     });
 
-    const tl = gsap.timeline({
-      scrollTrigger: {
-        trigger: wrapper.parentElement ?? document.body,
-        start: "top top",
-        end: `+=${SCROLL_DURATION}`,
-        scrub: true,
-        invalidateOnRefresh: true,
-      },
+    // On load: zoom from tiny to full size, then stop
+    const zoomTl = gsap.timeline();
+    zoomTl.to(wrapper, {
+      scale: 1,
+      duration: 0.55,
+      ease: "power2.out",
+      overwrite: true,
     });
 
-    tl.to(wrapper, {
-      x: FINAL_OFFSET,
-      y: FINAL_OFFSET,
-      xPercent: 0,
-      yPercent: 0,
-      scale: 0.5,
-      ease: "none",
-    });
+    // Start scroll-driven timeline after zoom so it doesn't overwrite the zoom at load
+    let tl: gsap.core.Timeline | undefined;
+    const scrollTlId = window.setTimeout(() => {
+      tl = gsap.timeline({
+        scrollTrigger: {
+          trigger: wrapper.parentElement ?? document.body,
+          start: "top top",
+          end: `+=${SCROLL_DURATION}`,
+          scrub: true,
+          invalidateOnRefresh: true,
+        },
+      });
+      tl.fromTo(
+        wrapper,
+        {
+          x: centerX,
+          y: centerY,
+          xPercent: -50,
+          yPercent: -50,
+          scale: 1,
+          transformOrigin: "center center",
+        },
+        {
+          x: FINAL_OFFSET_LEFT,
+          y: FINAL_OFFSET_TOP,
+          xPercent: 0,
+          yPercent: 0,
+          scale: 0.38,
+          transformOrigin: "0 0",
+          ease: "none",
+        }
+      );
+    }, 600);
 
     return () => {
-      tl.scrollTrigger?.kill();
-      tl.kill();
+      window.clearTimeout(scrollTlId);
+      zoomTl.kill();
+      tl?.scrollTrigger?.kill();
+      tl?.kill();
     };
   }, []);
 
-  // In section four (drops): switch to purple gradient shimmer logo
+  // In section four: switch to shimmer logo; reset when leaving forward OR back
   useEffect(() => {
     const sectionFour = document.getElementById("section-four");
     if (!sectionFour) return;
@@ -73,6 +99,7 @@ export default function LogoHero() {
       start: "top 30%",
       end: "top -10%",
       onEnter: () => setInSectionFour(true),
+      onLeave: () => setInSectionFour(false),
       onLeaveBack: () => setInSectionFour(false),
     });
 
@@ -95,22 +122,6 @@ export default function LogoHero() {
     return () => trigger.kill();
   }, []);
 
-  // In last section (section six): purple logo
-  useEffect(() => {
-    const sectionSix = document.getElementById("section-six");
-    if (!sectionSix) return;
-
-    const trigger = ScrollTrigger.create({
-      trigger: sectionSix,
-      start: "top 70%",
-      end: "top -10%",
-      onEnter: () => setInLastSection(true),
-      onLeaveBack: () => setInLastSection(false),
-    });
-
-    return () => trigger.kill();
-  }, []);
-
   return (
     <div 
       ref={wrapperRef} 
@@ -126,23 +137,26 @@ export default function LogoHero() {
       }} 
       aria-hidden
     >
-      <div style={{ position: "relative", width: "100%", height: "100%" }}>
-        <span
+      <div style={{
+        position: "relative",
+        width: "100%",
+        height: "100%",
+        filter:
+          "drop-shadow(0 0 6px rgba(65,105,225,0.95)) " +
+          "drop-shadow(0 0 15px rgba(65,105,225,0.8)) " +
+          "drop-shadow(0 0 35px rgba(65,105,225,0.6)) " +
+          "drop-shadow(0 0 70px rgba(65,105,225,0.35)) " +
+          "drop-shadow(0 0 120px rgba(65,105,225,0.2))",
+      }}>
+        <img
+          src="/logo_vectorized.svg"
+          alt="No Words"
+          className="block w-full h-auto"
           style={{
-            display: "block",
             opacity: (inLastSection || (inSectionFour && !inSectionFive)) ? 0 : 1,
             transition: "opacity 0.35s ease",
           }}
-        >
-          <AnimatedLogo
-            className="text-[#e8e6e3] block w-full"
-            duration={1.1}
-            delay={0.2}
-            direction="left-to-right"
-            strokeDuration={0.9}
-            fillDuration={1}
-          />
-        </span>
+        />
         <div
           className="logo-shimmer block w-full min-h-[2rem]"
           style={{
@@ -150,7 +164,7 @@ export default function LogoHero() {
             inset: 0,
             opacity: (inLastSection || (inSectionFour && !inSectionFive)) ? 1 : 0,
             transition: "opacity 0.35s ease",
-            aspectRatio: "4668 / 1022",
+            aspectRatio: "968 / 1074",
           }}
           aria-hidden
         />

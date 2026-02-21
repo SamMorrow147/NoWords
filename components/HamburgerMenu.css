@@ -13,7 +13,7 @@
   position: fixed;
   top: 0;
   right: 0;
-  z-index: 50;          /* above logo (z-30), nav overlay, everything */
+  z-index: 70;          /* above hero text (z-45), nav overlay (60), everything */
   pointer-events: none;  /* let clicks pass through the empty header */
 }
 
@@ -87,80 +87,23 @@
 .main-nav {
   position: fixed;
   inset: 0;
-  z-index: 40;           /* below burger (50), above content */
+  z-index: 60;           /* below burger (70), above hero text (45) */
   padding: 5rem 2rem 2rem;
   /* foggy / frosted look */
-  background: rgba(27, 0, 27, 0.55);
+  background: rgba(0, 15, 40, 0.65);
   -webkit-backdrop-filter: blur(24px) saturate(120%);
   backdrop-filter: blur(24px) saturate(120%);
   opacity: 0;
   transform: scale(0.92);
   transition: opacity 0.5s ease, transform 0.5s ease;
   pointer-events: none;
-  overflow: hidden; /* contain the ice texture */
+  overflow: hidden;
 }
 
 .main-nav.toggled {
   opacity: 1;
   transform: scale(1);
   pointer-events: auto;
-}
-
-/* ---- Ice freeze overlay – 3 edge layers ---- */
-.nav-ice-overlay {
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;
-  mix-blend-mode: screen;
-}
-
-/* Shared styles for each ice edge layer */
-.nav-ice-edge {
-  position: absolute;
-  inset: 0;
-  background-image: url("/IceTexture.png");
-  background-size: 100% 100%;
-  background-position: center;
-  background-repeat: no-repeat;
-  pointer-events: none;
-  opacity: 0;
-}
-
-/* Left edge — grows from left */
-.nav-ice-left {
-  -webkit-mask-image: linear-gradient(to right, black 0%, black 30%, rgba(0,0,0,0.3) 55%, transparent 75%);
-  mask-image: linear-gradient(to right, black 0%, black 30%, rgba(0,0,0,0.3) 55%, transparent 75%);
-  -webkit-mask-size: 0% 100%;
-  mask-size: 0% 100%;
-  -webkit-mask-position: left center;
-  mask-position: left center;
-  -webkit-mask-repeat: no-repeat;
-  mask-repeat: no-repeat;
-}
-
-/* Right edge — grows from right */
-.nav-ice-right {
-  -webkit-mask-image: linear-gradient(to left, black 0%, black 30%, rgba(0,0,0,0.3) 55%, transparent 75%);
-  mask-image: linear-gradient(to left, black 0%, black 30%, rgba(0,0,0,0.3) 55%, transparent 75%);
-  -webkit-mask-size: 0% 100%;
-  mask-size: 0% 100%;
-  -webkit-mask-position: right center;
-  mask-position: right center;
-  -webkit-mask-repeat: no-repeat;
-  mask-repeat: no-repeat;
-}
-
-/* Bottom edge — grows from bottom */
-.nav-ice-bottom {
-  -webkit-mask-image: linear-gradient(to top, black 0%, black 30%, rgba(0,0,0,0.3) 55%, transparent 75%);
-  mask-image: linear-gradient(to top, black 0%, black 30%, rgba(0,0,0,0.3) 55%, transparent 75%);
-  -webkit-mask-size: 100% 0%;
-  mask-size: 100% 0%;
-  -webkit-mask-position: bottom center;
-  mask-position: bottom center;
-  -webkit-mask-repeat: no-repeat;
-  mask-repeat: no-repeat;
 }
 
 /* Nav inner: flex column so link list is centered and social sits at bottom */
@@ -173,7 +116,6 @@
   padding-bottom: 1rem;
 }
 
-/* Make sure nav content sits above the ice */
 .main-nav ul {
   padding: 0;
   list-style: none;

@@ -104,21 +104,7 @@ export default function AnimatedLogo({
         });
       });
 
-      // Debug: log animation order so you can match "the 5th element" to a path
-      console.log(
-        "%cLogo intro — draw order (index = order on screen)",
-        "font-weight:bold; font-size:11px;"
-      );
-      console.table(
-        animationOrder.map((o) => ({
-          "Draw #": o.index,
-          Word: o.word,
-          "Path in DOM": o.pathDomIndex,
-          ...(o.area != null && { "Area (px²)": o.area }),
-        }))
-      );
-
-      // Set data attributes so you can inspect in DevTools (hover over paths to see draw order)
+      // Data attributes for DevTools (hover over paths to see draw order)
       animationOrder.forEach((o) => {
         o.path.setAttribute("data-draw-index", String(o.index));
         o.path.setAttribute("data-word", o.word);
@@ -164,7 +150,7 @@ export default function AnimatedLogo({
       xmlns="http://www.w3.org/2000/svg"
       viewBox={`0 0 ${VIEWBOX.width} ${VIEWBOX.height}`}
       fill="none"
-      aria-label="Cold Culture"
+      aria-label="Nowords Print Studio"
     >
       <defs>
         <style>

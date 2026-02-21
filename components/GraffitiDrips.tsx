@@ -24,6 +24,7 @@ interface GraffitiDripsProps {
   groupOffsets?: number[];
   yOffset?: number;
   firstXNudge?: number;
+  firstYNudge?: number;
 }
 
 function makeTriplet(
@@ -71,6 +72,7 @@ export default function GraffitiDrips({
   groupOffsets = [0.48, 0.58, 0.68, 0.78],
   yOffset = 0,
   firstXNudge = 0,
+  firstYNudge = 0,
 }: GraffitiDripsProps) {
   const svgRef = useRef<SVGSVGElement>(null);
   const pathRefs = useRef<(SVGPathElement | null)[]>([]);
@@ -108,7 +110,7 @@ export default function GraffitiDrips({
           const extraLeft = lineIdx === 0 ? 5 : 0;
           const cx = r.left + r.width / 2 - anchorRect.left - 16 - extraLeft + firstXNudge;
           const group = lineIdx === 0 ? 0 : 2;
-          allDrips.push(...makeTriplet(cx, baseY, "left", group));
+          allDrips.push(...makeTriplet(cx, baseY + firstYNudge, "left", group));
         }
 
         mids.forEach((mid, midIdx) => {

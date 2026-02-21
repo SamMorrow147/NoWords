@@ -596,12 +596,12 @@ export default function DropsPage() {
         />
         {/* Header */}
         <header className="relative z-20 flex justify-center items-center px-4 py-3 text-white bg-black/20 backdrop-blur-sm overflow-visible">
-          <a href="/" className="flex justify-center items-center overflow-visible" aria-label="Cold Culture home">
+          <a href="/" className="flex justify-center items-center overflow-visible" aria-label="Nowords Print Studio home">
             <div
               className="logo-shimmer h-14 md:h-16"
               style={{ aspectRatio: "4668 / 1022", marginTop: "-0.5rem", marginBottom: "-0.5rem" }}
               role="img"
-              aria-label="Cold Culture"
+              aria-label="Nowords Print Studio"
             />
           </a>
         </header>

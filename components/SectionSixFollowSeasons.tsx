@@ -128,6 +128,7 @@ export default function SectionSixFollowSeasons() {
           groupOffsets={[0.82, 0.92, 0.82, 0.92]}
           yOffset={12}
           firstXNudge={12}
+          firstYNudge={10}
         />
       </div>
     </div>

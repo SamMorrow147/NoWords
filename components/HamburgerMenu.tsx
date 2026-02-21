@@ -1,12 +1,12 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
 import "./HamburgerMenu.css";
 
 const NAV_LINKS = [
   { href: "/", label: "Home" },
-  { href: "/drops", label: "Drops" },
+  { href: "/contact", label: "Contact" },
 ];
 
 export default function HamburgerMenu({
@@ -16,10 +16,6 @@ export default function HamburgerMenu({
 }) {
   const [toggled, setToggled] = useState(false);
   const pathname = usePathname();
-  const iceRef = useRef<HTMLDivElement>(null);
-  const iceLeftRef = useRef<HTMLDivElement>(null);
-  const iceRightRef = useRef<HTMLDivElement>(null);
-  const iceBottomRef = useRef<HTMLDivElement>(null);
 
   // Auto-close the menu whenever the route changes
   useEffect(() => {
@@ -32,78 +28,6 @@ export default function HamburgerMenu({
   };
 
   const closeMenu = () => setToggled(false);
-
-  /* Animate the ice freeze effect when nav opens/closes */
-  useEffect(() => {
-    const left = iceLeftRef.current;
-    const right = iceRightRef.current;
-    const bottom = iceBottomRef.current;
-    if (!left || !right || !bottom) return;
-
-    const layers = [left, right, bottom];
-    let timers: ReturnType<typeof setTimeout>[] = [];
-
-    function setMask(el: HTMLElement, size: string) {
-      el.style.maskSize = size;
-      (el.style as unknown as Record<string, string>)["-webkit-mask-size"] = size;
-    }
-
-    if (toggled) {
-      // Reset all layers
-      layers.forEach((el) => {
-        el.style.transition = "none";
-        el.style.opacity = "0";
-      });
-      setMask(left, "0% 100%");
-      setMask(right, "0% 100%");
-      setMask(bottom, "100% 0%");
-      void left.offsetHeight;
-
-      // Stage 1 (0s): frost starts creeping from all edges
-      layers.forEach((el) => {
-        el.style.transition =
-          "mask-size 3s linear, -webkit-mask-size 3s linear, opacity 2s ease-out";
-      });
-      setMask(left, "40% 100%");
-      setMask(right, "40% 100%");
-      setMask(bottom, "100% 35%");
-      layers.forEach((el) => { el.style.opacity = "0.05"; });
-
-      // Stage 2 (2s): growing further
-      timers.push(setTimeout(() => {
-        layers.forEach((el) => {
-          el.style.transition =
-            "mask-size 3s linear, -webkit-mask-size 3s linear, opacity 2s ease-out";
-        });
-        setMask(left, "70% 100%");
-        setMask(right, "70% 100%");
-        setMask(bottom, "100% 65%");
-        layers.forEach((el) => { el.style.opacity = "0.09"; });
-      }, 2000));
-
-      // Stage 3 (4s): fully frozen
-      timers.push(setTimeout(() => {
-        layers.forEach((el) => {
-          el.style.transition =
-            "mask-size 2.5s ease-out, -webkit-mask-size 2.5s ease-out, opacity 2s ease-out";
-        });
-        setMask(left, "100% 100%");
-        setMask(right, "100% 100%");
-        setMask(bottom, "100% 100%");
-        layers.forEach((el) => { el.style.opacity = "0.12"; });
-      }, 4000));
-    } else {
-      // Fade out when closing
-      layers.forEach((el) => {
-        el.style.transition = "opacity 0.8s ease";
-        el.style.opacity = "0";
-      });
-    }
-
-    return () => {
-      timers.forEach(clearTimeout);
-    };
-  }, [toggled]);
 
   return (
     <div className="hamburger-screen">
@@ -130,13 +54,6 @@ export default function HamburgerMenu({
         role="navigation"
         aria-hidden={!toggled}
       >
-        {/* Ice freeze overlay — 3 edges creeping inward */}
-        <div ref={iceRef} className="nav-ice-overlay" aria-hidden>
-          <div ref={iceLeftRef} className="nav-ice-edge nav-ice-left" />
-          <div ref={iceRightRef} className="nav-ice-edge nav-ice-right" />
-          <div ref={iceBottomRef} className="nav-ice-edge nav-ice-bottom" />
-        </div>
-
         <div className="main-nav-inner">
           <ul>
             {NAV_LINKS.map(({ href, label }) => (
@@ -146,27 +63,26 @@ export default function HamburgerMenu({
                 </a>
               </li>
             ))}
-            {/* Metal — plain <a> with no JS, forces full page load */}
             <li>
-              <a href="/drops/knux-necklace">
-                <span>Metal</span>
+              <a href="tel:6123562684" onClick={closeMenu}>
+                <span>Call</span>
               </a>
             </li>
           </ul>
           <div className="nav-social" aria-label="Social links">
             <a
-              href="https://www.facebook.com/profile.php?id=100090307900335"
+              href="https://www.facebook.com/profile.php?id=61576968374104"
               target="_blank"
               rel="noopener noreferrer"
-              aria-label="Cold Culture on Facebook"
+              aria-label="Nowords Print Studio on Facebook"
             >
               <img src="/facebook-3.svg" alt="" width={28} height={28} />
             </a>
             <a
-              href="https://www.instagram.com/shopcoldculture"
+              href="https://www.instagram.com/mrnowords_mplstp?igsh=eWs4MXczZThoN2Vr&utm_source=qr"
               target="_blank"
               rel="noopener noreferrer"
-              aria-label="Cold Culture on Instagram"
+              aria-label="Nowords Print Studio on Instagram"
             >
               <img src="/instagram-2.svg" alt="" width={28} height={28} />
             </a>

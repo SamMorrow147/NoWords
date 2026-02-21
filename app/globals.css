@@ -1,5 +1,60 @@
 @import "tailwindcss";
 
+/* Halftone moving linear waves — @property for animatable custom property */
+@property --halftone-j {
+  syntax: '<number>';
+  initial-value: 0;
+  inherits: true;
+}
+
+@keyframes halftone-wave {
+  to { --halftone-j: 1; }
+}
+
+.halftone-waves-section {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  overflow: hidden;
+  animation: halftone-wave 4.6s linear infinite;
+}
+
+.halftone-waves-section > * {
+  grid-column: 1;
+  grid-row: 1;
+  transform: scale(1.4);
+  transform-origin: center center;
+}
+
+.halftone-waves-gradient {
+  z-index: 0;
+  background: linear-gradient(90deg, #2D5BFF, #C13A6C, #E24A4A, #F06A2A, #F2C200);
+}
+
+.halftone-waves-dots {
+  z-index: 0;
+  place-self: stretch;
+  position: relative;
+  background:
+    linear-gradient(#000, #777, #000)
+      0 calc(var(--halftone-j) * 20vh) / 100% 20vh,
+    radial-gradient(closest-side, #888, #000)
+      0 / 1em 1em space;
+  background-blend-mode: screen;
+  mix-blend-mode: multiply;
+  filter: contrast(21);
+}
+
+.halftone-waves-overlay {
+  grid-column: 1;
+  grid-row: 1;
+  place-self: stretch;
+  transform: none;
+  background: rgba(0, 0, 0, 0.28);
+  pointer-events: none;
+  z-index: 1;
+}
+
 @font-face {
   font-family: "Abject Failure";
   src: url("/AbjectFailure.otf") format("opentype");
@@ -9,7 +64,7 @@
 }
 
 :root {
-  --background: #1b001b;
+  --background: #3d3d3d;
   --foreground: #ededed;
 }
 
@@ -22,7 +77,7 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #1b001b;
+    --background: #3d3d3d;
     --foreground: #ededed;
   }
 }
@@ -87,8 +142,8 @@ body {
   animation: logo-shimmer var(--duration) linear infinite;
   color: transparent; /* prevent any text color leaking in */
 
-  -webkit-mask-image: url("/ColdCulture-white.svg");
-  mask-image: url("/ColdCulture-white.svg");
+  -webkit-mask-image: url("/NowordsPrintStudio-white.svg");
+  mask-image: url("/NowordsPrintStudio-white.svg");
   -webkit-mask-size: contain;
   mask-size: contain;
   -webkit-mask-repeat: no-repeat;
@@ -293,91 +348,6 @@ body {
   overflow: visible;
 }
 
-/* Homepage: foggy glass + ice overlay at top of page (same as nav) */
-.homepage-top-overlay {
-  position: fixed;
-  inset: 0;
-  z-index: 25;
-  pointer-events: none;
-  overflow: hidden;
-}
-
-/* Foggy glass purple – same as nav .main-nav */
-.homepage-glass {
-  position: absolute;
-  inset: 0;
-  background: rgba(27, 0, 27, 0.55);
-  -webkit-backdrop-filter: blur(24px) saturate(120%);
-  backdrop-filter: blur(24px) saturate(120%);
-  opacity: 0;
-  transition: opacity 0.5s ease;
-}
-
-.homepage-top-overlay.at-top .homepage-glass {
-  opacity: 1;
-}
-
-.homepage-ice-overlay {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  mix-blend-mode: screen;
-}
-
-.homepage-ice-edge {
-  position: absolute;
-  inset: 0;
-  background-image: url("/IceTexture.png");
-  background-size: 100% 100%;
-  background-position: center;
-  background-repeat: no-repeat;
-  pointer-events: none;
-  opacity: 0;
-}
-
-.homepage-ice-left {
-  -webkit-mask-image: linear-gradient(to right, black 0%, black 30%, rgba(0,0,0,0.3) 55%, transparent 75%);
-  mask-image: linear-gradient(to right, black 0%, black 30%, rgba(0,0,0,0.3) 55%, transparent 75%);
-  -webkit-mask-size: 0% 100%;
-  mask-size: 0% 100%;
-  -webkit-mask-position: left center;
-  mask-position: left center;
-  -webkit-mask-repeat: no-repeat;
-  mask-repeat: no-repeat;
-}
-
-.homepage-ice-right {
-  -webkit-mask-image: linear-gradient(to left, black 0%, black 30%, rgba(0,0,0,0.3) 55%, transparent 75%);
-  mask-image: linear-gradient(to left, black 0%, black 30%, rgba(0,0,0,0.3) 55%, transparent 75%);
-  -webkit-mask-size: 0% 100%;
-  mask-size: 0% 100%;
-  -webkit-mask-position: right center;
-  mask-position: right center;
-  -webkit-mask-repeat: no-repeat;
-  mask-repeat: no-repeat;
-}
-
-.homepage-ice-bottom {
-  -webkit-mask-image: linear-gradient(to top, black 0%, black 30%, rgba(0,0,0,0.3) 55%, transparent 75%);
-  mask-image: linear-gradient(to top, black 0%, black 30%, rgba(0,0,0,0.3) 55%, transparent 75%);
-  -webkit-mask-size: 100% 0%;
-  mask-size: 100% 0%;
-  -webkit-mask-position: bottom center;
-  mask-position: bottom center;
-  -webkit-mask-repeat: no-repeat;
-  mask-repeat: no-repeat;
-}
-
-/* Hero first section: scroll-driven ice in front of fog, same range as "Nice Right?" */
-.hero-scroll-ice {
-  position: fixed;
-  inset: 0;
-  z-index: 37;
-  pointer-events: none;
-  overflow: hidden;
-  mix-blend-mode: screen;
-}
-
 /* You BETcha — BET white stroke: thinner on mobile */
 .section-two-bet-stroke {
   -webkit-text-stroke: 2px white;
@@ -395,6 +365,74 @@ body {
     background-position: center bottom !important;
   }
 }
+
+/* ── Mask-reveal button ─────────────────────────────────────── */
+.mask-btn-container {
+  position: relative;
+  width: 280px;
+  height: 72px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  cursor: pointer;
+  background: rgba(0, 0, 0, 0.55);
+  transition: border-color 0.3s ease;
+}
+
+.mask-btn-container:hover {
+  border-color: rgba(255, 255, 255, 0.8);
+}
+
+.mask-btn-label {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-family: "pressio-stencil-cond", sans-serif;
+  font-weight: 700;
+  font-size: 1.5rem;
+  letter-spacing: 0.12em;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.mask-btn-fill {
+  position: absolute;
+  inset: 0;
+  width: 101%;
+  height: 100%;
+  background: #fff;
+  -webkit-mask: url("https://raw.githubusercontent.com/robin-dela/css-mask-animation/master/img/nature-sprite.png");
+  mask: url("https://raw.githubusercontent.com/robin-dela/css-mask-animation/master/img/nature-sprite.png");
+  -webkit-mask-size: 2300% 100%;
+  mask-size: 2300% 100%;
+  /* Default: fully filled — sprite frame 0 = visible */
+  -webkit-mask-position: 0 0;
+  mask-position: 0 0;
+  border: none;
+  cursor: pointer;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: "pressio-stencil-cond", sans-serif;
+  font-weight: 700;
+  font-size: 1.5rem;
+  letter-spacing: 0.12em;
+  color: #000;
+}
+
+/* Hover: wipe the fill away */
+.mask-btn-container:hover .mask-btn-fill {
+  animation: mask-wipe-out 0.7s steps(22) forwards;
+}
+
+@keyframes mask-wipe-out {
+  from { -webkit-mask-position: 0 0;    mask-position: 0 0; }
+  to   { -webkit-mask-position: 100% 0; mask-position: 100% 0; }
+}
+/* ───────────────────────────────────────────────────────────── */
 
 /* Drops link — much bigger on mobile */
 @media (max-width: 768px) {

@@ -5,62 +5,48 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import LogoHero from "@/components/LogoHero";
 import ScrollBackground from "@/components/ScrollBackground";
-import PixelSnow from "@/components/PixelSnow";
 import ZoomFigure from "@/components/ZoomFigure";
 import HandwrittenText from "@/components/HandwrittenText";
-import FoggyCorner from "@/components/FoggyCorner";
-import SectionTwoFog from "@/components/SectionTwoFog";
-import SectionTwoText from "@/components/SectionTwoText";
-import SectionFourFog from "@/components/SectionFourFog";
-import SectionFourText from "@/components/SectionFourText";
-import SectionThreeFoggyCorner from "@/components/SectionThreeFoggyCorner";
+import HeroTagline from "@/components/HeroTagline";
+import SectionTwoWhatWePrint from "@/components/SectionTwoWhatWePrint";
 import SectionThreeText from "@/components/SectionThreeText";
-import HomepageTopIce from "@/components/HomepageTopIce";
-import HeroScrollIce from "@/components/HeroScrollIce";
-import SmokeEffect from "@/components/SmokeEffect";
+import SectionFourOrderCTA from "@/components/SectionFourOrderCTA";
 import SectionFiveFoggyCorner from "@/components/SectionFiveFoggyCorner";
-import SectionFiveMadeByHand from "@/components/SectionFiveMadeByHand";
-import FluorescentFlicker from "@/components/FluorescentFlicker";
-import SectionSixFollowSeasons from "@/components/SectionSixFollowSeasons";
+import HalftoneWaves from "@/components/HalftoneWaves";
 
 gsap.registerPlugin(ScrollTrigger);
 
 export default function Home() {
-  const [showSnow, setShowSnow] = useState(false);
-  const snowRef = useRef<HTMLDivElement>(null);
   const sectionTwoBgRef = useRef<HTMLDivElement>(null);
   const sectionThreeBgRef = useRef<HTMLDivElement>(null);
+  const squeegeeRef = useRef<HTMLDivElement>(null);
   const sectionFourBgRef = useRef<HTMLDivElement>(null);
   const sectionFiveBgRef = useRef<HTMLDivElement>(null);
-  const sectionSixBgRef = useRef<HTMLDivElement>(null);
-  const rainContainerRef = useRef<HTMLDivElement>(null);
   const beanieRef = useRef<HTMLDivElement>(null);
   const whiteFlashRef = useRef<HTMLDivElement>(null);
+  const heroOverlayRef = useRef<HTMLDivElement>(null);
 
+  // Hero dark overlay: fade out as we scroll into section 2
   useEffect(() => {
-    // Start snow after logo animation completes (0.4s delay + 2.2s duration = 2.6s)
-    const timer = setTimeout(() => {
-      const sectionFive = document.getElementById("section-five");
-      if (sectionFive) {
-        const rect = sectionFive.getBoundingClientRect();
-        // If already scrolled to the last section, don't start snow (e.g. after refresh at bottom)
-        if (rect.top < window.innerHeight * 0.75) return;
-      }
-      setShowSnow(true);
-    }, 2700);
+    const overlay = heroOverlayRef.current;
+    const sectionTwo = document.getElementById("section-two");
+    if (!overlay || !sectionTwo) return;
 
-    return () => clearTimeout(timer);
+    const tl = gsap.timeline({
+      scrollTrigger: {
+        trigger: sectionTwo,
+        start: "top bottom",
+        end: "top 50%",
+        scrub: true,
+      },
+    });
+    tl.to(overlay, { opacity: 0, ease: "none" });
+
+    return () => {
+      tl.scrollTrigger?.kill();
+      tl.kill();
+    };
   }, []);
-
-  useEffect(() => {
-    if (showSnow && snowRef.current) {
-      gsap.fromTo(
-        snowRef.current,
-        { opacity: 0 },
-        { opacity: 1, duration: 1.5, ease: "power2.inOut" }
-      );
-    }
-  }, [showSnow]);
 
   // Fade in section 2 background only when approaching section 2
   useEffect(() => {
@@ -85,28 +71,49 @@ export default function Home() {
     };
   }, []);
 
-  // Section 3: slide section 2 image right and show necklace (third image)
+  // Section 2→3: squeegee wipes left→right; section 3 appears at 100% behind squeegee
   useEffect(() => {
-    const sectionTwoBg = sectionTwoBgRef.current;
     const sectionThreeBg = sectionThreeBgRef.current;
+    const squeegee = squeegeeRef.current;
     const sectionThree = document.getElementById("section-three");
-    if (!sectionTwoBg || !sectionThreeBg || !sectionThree) return;
+    if (!sectionThreeBg || !sectionThree || !squeegee) return;
+
+    const sw = squeegee.offsetWidth || 300;
+    const vw = window.innerWidth;
+
+    // Section 3 is full opacity but fully clipped (nothing visible yet), sits above section 2
+    gsap.set(sectionThreeBg, { opacity: 1, zIndex: 2 });
+    sectionThreeBg.style.clipPath = "inset(0 100% 0 0)";
+
+    // Squeegee starts off-screen left, now safe to show
+    gsap.set(squeegee, { x: -sw, visibility: "visible" });
 
     const tl = gsap.timeline({
       scrollTrigger: {
         trigger: sectionThree,
-        start: "top bottom",
+        start: "top 250%",
         end: "top top",
         scrub: true,
       },
     });
 
-    tl.to(sectionTwoBg, { x: "100vw", ease: "none" }, 0);
-    tl.to(sectionThreeBg, { opacity: 1, ease: "none" }, 0);
+    // Squeegee slides from off-screen left (-sw) to off-screen right (vw)
+    tl.to(squeegee, {
+      x: vw,
+      ease: "none",
+      onUpdate() {
+        const currentX = gsap.getProperty(squeegee, "x") as number;
+        // Reveal section 3 up to the squeegee's left edge
+        const revealed = Math.max(0, Math.min(vw, currentX));
+        const clipRight = vw - revealed;
+        sectionThreeBg.style.clipPath = `inset(0 ${clipRight}px 0 0)`;
+      },
+    }, 0);
 
     return () => {
       tl.scrollTrigger?.kill();
       tl.kill();
+      sectionThreeBg.style.clipPath = "";
     };
   }, []);
 
@@ -116,19 +123,19 @@ export default function Home() {
     const sectionFour = document.getElementById("section-four");
     if (!beanie || !sectionFour) return;
 
-    gsap.set(beanie, { xPercent: -50, yPercent: -50, y: "-100vh", force3D: true });
+    gsap.set(beanie, { xPercent: -50, yPercent: -50, y: "-100vh", opacity: 1, force3D: true });
 
     const tl = gsap.timeline({
       scrollTrigger: {
         trigger: sectionFour,
-        start: "top bottom",
-        end: "top -80%",
+        start: "top 350%",
+        end: "top -50%",
         scrub: true,
         invalidateOnRefresh: true,
       },
     });
 
-    tl.to(beanie, { xPercent: -50, yPercent: -50, y: "-12vh", ease: "none", force3D: true });
+    tl.to(beanie, { xPercent: -50, yPercent: -50, y: "14vh", ease: "none", force3D: true });
 
     return () => {
       tl.scrollTrigger?.kill();
@@ -170,11 +177,6 @@ export default function Home() {
     const sectionFive = document.getElementById("section-five");
     if (!sectionFourBg || !sectionFiveBg || !whiteFlash || !beanie || !sectionFive) return;
 
-    const fog = document.querySelector(".section-four-fog") as HTMLElement | null;
-    const dropsText = document.querySelector(".section-four-drops") as HTMLElement | null;
-    const topOverlay = document.querySelector(".homepage-top-overlay") as HTMLElement | null;
-    const heroScrollIce = document.querySelector(".hero-scroll-ice") as HTMLElement | null;
-
     const tl = gsap.timeline({
       scrollTrigger: {
         trigger: sectionFive,
@@ -187,10 +189,6 @@ export default function Home() {
     // Fade out section 4 layers while white rises
     tl.to(sectionFourBg, { opacity: 0, ease: "none", duration: 0.4 }, 0);
     tl.to(beanie, { opacity: 0, ease: "none", duration: 0.4 }, 0);
-    if (fog) tl.to(fog, { opacity: 0, ease: "none", duration: 0.4 }, 0);
-    if (dropsText) tl.to(dropsText, { opacity: 0, ease: "none", duration: 0.4 }, 0);
-    if (topOverlay) tl.to(topOverlay, { opacity: 0, ease: "none", duration: 0.3 }, 0);
-    if (heroScrollIce) tl.to(heroScrollIce, { opacity: 0, ease: "none", duration: 0.3 }, 0);
 
     // White flash: ramp up then fade out
     tl.to(whiteFlash, { opacity: 1, ease: "power2.in", duration: 0.5 }, 0);
@@ -205,87 +203,54 @@ export default function Home() {
     };
   }, []);
 
-  // Section 6: dissolve section 5 content and reveal section 6; smoke fades in on last section.
-  useEffect(() => {
-    const sectionFiveBg = sectionFiveBgRef.current;
-    const sectionSixBg = sectionSixBgRef.current;
-    const smokeContainer = rainContainerRef.current;
-    const sectionSix = document.getElementById("section-six");
-    if (!sectionFiveBg || !sectionSixBg || !sectionSix) return;
-
-    const tl = gsap.timeline({
-      scrollTrigger: {
-        trigger: sectionSix,
-        start: "top 140%",
-        end: "top 30%",
-        scrub: true,
-      },
-    });
-
-    tl.to(sectionFiveBg, { opacity: 0, ease: "none" }, 0);
-    tl.to(sectionSixBg, { opacity: 1, ease: "none" }, 0);
-    if (smokeContainer) tl.to(smokeContainer, { opacity: 1, ease: "none" }, 0);
-
-    return () => {
-      tl.scrollTrigger?.kill();
-      tl.kill();
-    };
-  }, []);
-
-  // Section 5: stop snow when you reach the bottom (fade out with the rest of the dissolve).
-  useEffect(() => {
-    if (!showSnow) return;
-    const snow = snowRef.current;
-    const sectionFive = document.getElementById("section-five");
-    if (!snow || !sectionFive) return;
-
-    const tl = gsap.timeline({
-      scrollTrigger: {
-        trigger: sectionFive,
-        start: "top bottom",
-        end: "top 45%",
-        scrub: true,
-      },
-    });
-
-    tl.to(snow, { opacity: 0, ease: "none" });
-
-    return () => {
-      tl.scrollTrigger?.kill();
-      tl.kill();
-    };
-  }, [showSnow]);
 
   return (
-    <div className="min-h-screen bg-[#1b001b]">
+    <div className="min-h-screen bg-[#3d3d3d]">
       {/* Section 2 background */}
       <div
         ref={sectionTwoBgRef}
         className="fixed inset-0 w-full h-full bg-cover bg-center bg-no-repeat"
         style={{
-          backgroundImage: `url('/freepik__at-night-city-lights-purples-and-yellow-light-cast__39381.png')`,
+          backgroundImage: `url('/freepik__topdown-macro-of-yellow-screen-printing-mesh-unifo__22836.png')`,
           zIndex: 1,
           opacity: 0,
         }}
         aria-hidden
       />
-      {/* Section 3 background */}
+
+      {/* Section 3 background — solid black, clipped by squeegee wipe */}
       <div
         ref={sectionThreeBgRef}
-        className="section-three-bg fixed inset-0 w-full h-full bg-cover bg-center bg-no-repeat"
+        className="fixed inset-0 w-full h-full"
         style={{
-          backgroundImage: `url('/freepik__close-up-product-shot-of-this-necklace-swinging-ou__60531.png')`,
-          zIndex: 1,
-          opacity: 0,
+          background: "#000000",
+          zIndex: 2,
+          opacity: 1,
+          clipPath: "inset(0 100% 0 0)",
         }}
         aria-hidden
       />
+      {/* Squeegee: full height, aspect ratio preserved (no squish on mobile) */}
+      <div
+        ref={squeegeeRef}
+        className="fixed left-0 top-0 h-screen pointer-events-none"
+        style={{ zIndex: 50, willChange: "transform", width: "max-content", visibility: "hidden" }}
+        aria-hidden
+      >
+        <img
+          src="/freepik__topdown-studio-photograph-of-tattooed-hands-holdin__69463.png"
+          alt=""
+          className="h-full w-auto max-h-screen block object-contain align-top"
+          style={{ display: "block", minHeight: 0 }}
+          draggable={false}
+        />
+      </div>
       {/* Section 4 background */}
       <div
         ref={sectionFourBgRef}
         className="section-four-bg fixed inset-0 w-full h-full bg-cover bg-center bg-no-repeat"
         style={{
-          backgroundImage: `url('/freepik__an-image-outside-in-a-blizzard-at-a-big-box-of-the__64105.png')`,
+          backgroundImage: `url('/freepik__give-me-an-image-of-a-falling-folded-freshly-scree__51952.png')`,
           zIndex: 1,
           opacity: 0,
         }}
@@ -296,19 +261,8 @@ export default function Home() {
         ref={sectionFiveBgRef}
         className="section-five-bg fixed inset-0 w-full h-full bg-cover bg-center bg-no-repeat"
         style={{
-          backgroundImage: `url('/freepik__a-sketchy-screen-printing-shop-in-a-small-ghetto-s__60529.png')`,
-          zIndex: 0,
-          opacity: 0,
-        }}
-        aria-hidden
-      />
-      {/* Section 6 background */}
-      <div
-        ref={sectionSixBgRef}
-        className="section-six-bg fixed inset-0 w-full h-full bg-cover bg-center bg-no-repeat"
-        style={{
-          backgroundImage: `url('/freepik__can-you-give-me-an-image-of-a-lifestyle-brand-prod__50246.png')`,
-          zIndex: 0,
+          backgroundImage: `url('/freepik__at-risk-youth-learning-to-screen-print-in-a-studio__51953.png')`,
+          zIndex: 3,
           opacity: 0,
         }}
         aria-hidden
@@ -320,82 +274,49 @@ export default function Home() {
         style={{ zIndex: 10, opacity: 0, background: "#ffffff" }}
         aria-hidden
       />
-      {/* Smoke effect (last section only) */}
-      <div
-        ref={rainContainerRef}
-        className="fixed inset-0 pointer-events-none"
-        style={{ zIndex: 5, opacity: 0 }}
-        aria-hidden
-      >
-        <SmokeEffect />
-      </div>
-      {/* Section 5: flickering fluorescent ceiling light */}
-      <FluorescentFlicker />
-      {/* Section 5: "Made by Hand In Minneapolis" with scroll-driven reveal */}
-      <SectionFiveMadeByHand />
-      {/* Section 6: "Follow the Seasons" with scroll-driven reveal */}
-      <SectionSixFollowSeasons />
       {/* Section 6: foggy corner + socials */}
       <SectionFiveFoggyCorner />
       {/* Beanie: falls from top to center as section 3 scrolls up */}
       <div
         ref={beanieRef}
-        className="fixed left-1/2 top-1/2 w-[min(85vw,420px)] xl:w-[min(50vw,700px)] aspect-[1] pointer-events-none z-10"
+        className="fixed left-1/2 top-1/2 w-[min(92vw,520px)] xl:w-[min(58vw,820px)] aspect-[1] pointer-events-none z-10"
         style={{
           willChange: "transform",
           filter: "drop-shadow(0 12px 24px rgba(0,0,0,0.35))",
+          opacity: 0,
         }}
         aria-hidden
       >
         <img
-          src="/freepik__a-black-beanie-product-image-on-a-white-background__36577.png"
+          src="/freepik__give-me-an-image-of-a-falling-folded-freshly-scree__15202.png"
           alt=""
           className="w-full h-full object-contain"
           draggable={false}
         />
       </div>
-      {/* Section 2: fog along bottom + "You Betcha!" text */}
-      <SectionTwoFog />
-      <SectionTwoText />
-      {/* Section 3: circular fog on the right + "Shop Steel" text */}
-      <SectionThreeFoggyCorner />
+      {/* Section 2: What We Print title + list */}
+      <SectionTwoWhatWePrint />
+      {/* Section 3 (black): "Local & Purpose-Driven" + supporting line after squeegee wipe */}
       <SectionThreeText />
-      {/* Section 4: fog + "drop offs" text */}
-      <SectionFourFog />
-      <SectionFourText />
-      {/* Ice overlay when at top of page */}
-      <HomepageTopIce />
+      {/* Section 4: "Put in an order today" + Contact button */}
+      <SectionFourOrderCTA />
       {/* Hero: full viewport, logo centered; on scroll logo moves to top-left */}
       <section className="relative min-h-screen">
-        <ScrollBackground imagePath="/Heroimage.png" />
+        <HalftoneWaves />
+        <ScrollBackground imagePath="/freepik__small-screen-printing-print-shop-interior-next-to-__22837.png" />
+        {/* Dark overlay to mute hero background (halftone + image); fades out on scroll */}
+        <div
+          ref={heroOverlayRef}
+          className="fixed inset-0 pointer-events-none"
+          style={{ zIndex: 2, background: "rgba(0,0,0,0.45)", opacity: 1 }}
+          aria-hidden
+        />
         <ZoomFigure imagePath="/CenterFigure.png" />
-        <FoggyCorner imagePath="/Heroimage.png" />
-        <HeroScrollIce />
-        {showSnow && (
-          <div 
-            ref={snowRef}
-            className="fixed inset-0 pointer-events-none" 
-            style={{ zIndex: 30, opacity: 0 }}
-          >
-            <PixelSnow 
-              color="#ffffff"
-              flakeSize={0.01}
-              minFlakeSize={1.25}
-              pixelResolution={400}
-              speed={5}
-              density={0.6}
-              direction={125}
-              brightness={1}
-              depthFade={8}
-              farPlane={20}
-              gamma={0.4545}
-              variant="snowflake"
-            />
-          </div>
-        )}
         <LogoHero />
         <HandwrittenText />
       </section>
+      {/* Tagline: appears after logo moves and figure is in frame */}
+      <HeroTagline />
       {/* Spacer so first section animations complete before transition */}
       <div className="h-[100vh]" aria-hidden />
       <section id="section-two" className="relative min-h-[200vh]">
@@ -405,8 +326,6 @@ export default function Home() {
       <section id="section-four" className="relative min-h-[200vh]">
       </section>
       <section id="section-five" className="relative min-h-[200vh]">
-      </section>
-      <section id="section-six" className="relative min-h-[100vh]">
       </section>
     </div>
   );

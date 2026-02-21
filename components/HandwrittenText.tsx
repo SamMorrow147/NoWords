@@ -7,204 +7,95 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 gsap.registerPlugin(ScrollTrigger);
 
 export default function HandwrittenText() {
-  const svgRef = useRef<SVGSVGElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+  const line1Ref = useRef<HTMLSpanElement>(null);
+  const line2Ref = useRef<HTMLSpanElement>(null);
 
   useEffect(() => {
-    const svg = svgRef.current;
     const container = containerRef.current;
-    if (!svg || !container) return;
+    const line1 = line1Ref.current;
+    const line2 = line2Ref.current;
+    if (!container || !line1 || !line2) return;
 
-    const maskPaths = Array.from(svg.querySelectorAll<SVGPathElement>(".mask-path"));
+    const setClip = (el: HTMLElement, value: string) => {
+      el.style.setProperty("clip-path", value);
+      el.style.setProperty("-webkit-clip-path", value);
+    };
 
-    // Natural handwriting timings — maps 1:1 with pen-stroke mask paths
-    // N, i, c, e, R(stem/bowl/leg), i, g, h(tall/bump), t(stroke/cross), ?(curve/dot)
-    const letterTimings = [
-      { duration: 0.45, ease: "power1.inOut", overlap: "-=0.05" },  // N (3 continuous strokes)
-      { duration: 0.12, ease: "power1.out",   overlap: "-=0.03" },  // i (quick downstroke)
-      { duration: 0.25, ease: "power1.inOut", overlap: "-=0.05" },  // c (curve)
-      { duration: 0.25, ease: "power1.inOut", overlap: "-=0.05" },  // e (loop)
-      { duration: 0.30, ease: "power1.in",    overlap: "+=0.08" },  // R stem (pause before "Right")
-      { duration: 0.18, ease: "none",         overlap: "-=0.10" },  // R bowl (starts while stem finishes)
-      { duration: 0.15, ease: "power1.out",   overlap: "-=0.04" },  // R leg
-      { duration: 0.12, ease: "power1.out",   overlap: "-=0.03" },  // i (quick)
-      { duration: 0.30, ease: "power1.inOut", overlap: "-=0.05" },  // g (oval + descender)
-      { duration: 0.18, ease: "power1.in",    overlap: "-=0.04" },  // h tall stroke
-      { duration: 0.15, ease: "power1.out",   overlap: "-=0.06" },  // h bump/arch
-      { duration: 0.15, ease: "power1.in",    overlap: "-=0.04" },  // t vertical
-      { duration: 0.10, ease: "power1.out",   overlap: "-=0.02" },  // t cross
-      { duration: 0.35, ease: "power1.inOut", overlap: "-=0.03" },  // ? curve (bottom-up)
-      { duration: 0.08, ease: "power2.out",   overlap: "+=0.03" },  // ? dot (quick tap)
-    ];
+    // Lines start fully clipped; type out on load
+    setClip(line1, "inset(0 100% 0 0)");
+    setClip(line2, "inset(0 100% 0 0)");
+    gsap.set(container, { y: 0 });
 
-    // Set up stroke drawing for each mask path
-    maskPaths.forEach((path) => {
-      const len = path.getTotalLength();
-      path.style.strokeDasharray = `${len}`;
-      path.style.strokeDashoffset = `${len}`;
-      path.style.willChange = "stroke-dashoffset";
-      path.style.transform = "translateZ(0)";
+    const progress = { line1: 0, line2: 0 };
+    const typeTl = gsap.timeline({ delay: 0.4 });
+    typeTl.to(progress, {
+      line1: 1,
+      duration: 0.9,
+      ease: "power2.inOut",
+      onUpdate: () => setClip(line1, `inset(0 ${(1 - progress.line1) * 100}% 0 0)`),
     });
+    typeTl.to(progress, {
+      line2: 1,
+      duration: 0.9,
+      ease: "power2.inOut",
+      onUpdate: () => setClip(line2, `inset(0 ${(1 - progress.line2) * 100}% 0 0)`),
+    }, "-=0.15");
 
-    gsap.set(svg, { opacity: 0 });
-
-    // Scroll-driven handwriting: strokes draw as you scroll
-    const section = container.parentElement;
-    const tl = gsap.timeline({
+    // Slide up off screen as you scroll — scrubbed so it moves with your scroll
+    const exitTl = gsap.timeline({
       scrollTrigger: {
-        trigger: section ?? document.body,
-        start: "top top-=400",
-        end: "top top-=900",
-        scrub: 0.5,
-        markers: false,
-        id: "handwriting",
+        trigger: document.body,
+        start: "top top",
+        end: "+=300",
+        scrub: true,
       },
     });
-
-    // Fade in the SVG at the start of the scroll range
-    tl.to(svg, {
-      opacity: 1,
-      duration: 0.15,
+    exitTl.to(container, {
+      y: () => -window.innerHeight * 1.1,
+      ease: "none",
     });
-
-    // Animate each pen stroke with natural timing and overlaps
-    maskPaths.forEach((path, i) => {
-      const timing = letterTimings[i] || { duration: 0.3, ease: "none", overlap: 0 };
-
-      tl.to(path, {
-        strokeDashoffset: 0,
-        duration: timing.duration,
-        ease: timing.ease,
-      }, timing.overlap || 0);
-    });
-
-    // Fade out when section 2 is coming in
-    const sectionTwo = document.getElementById("section-two");
-    let exitTrigger: ScrollTrigger | undefined;
-    if (sectionTwo) {
-      exitTrigger = ScrollTrigger.create({
-        trigger: sectionTwo,
-        start: "top 50%",
-        onEnter: () => {
-          gsap.to(svg, { opacity: 0, duration: 0.4 });
-        },
-        onLeaveBack: () => {
-          gsap.to(svg, { opacity: 1, duration: 0.3 });
-        },
-      });
-    }
-
-    // RAF safety net: if we're past section-two, force container hidden.
-    // Before that point, ensure the container is visible so the SVG animation shows.
-    let rafId: number;
-    let wasForceHidden = false;
-    function ensureHidden() {
-      if (sectionTwo && container) {
-        const s2Top = sectionTwo.getBoundingClientRect().top;
-        const vh = window.innerHeight;
-        if (s2Top < vh * 0.5) {
-          // Past the exit — force container hidden
-          if (!wasForceHidden) {
-            container.style.opacity = "0";
-            container.style.visibility = "hidden";
-            wasForceHidden = true;
-          }
-        } else {
-          // In the visible zone — make sure container is opaque and visible
-          // (the SVG inside handles its own opacity for the draw animation)
-          if (wasForceHidden) {
-            container.style.opacity = "";
-            container.style.visibility = "";
-            wasForceHidden = false;
-          }
-        }
-      }
-      rafId = requestAnimationFrame(ensureHidden);
-    }
-    rafId = requestAnimationFrame(ensureHidden);
 
     return () => {
-      cancelAnimationFrame(rafId);
-      tl.scrollTrigger?.kill();
-      exitTrigger?.kill();
-      tl.kill();
+      typeTl.kill();
+      exitTl.scrollTrigger?.kill();
+      exitTl.kill();
     };
   }, []);
 
   return (
-    <div 
-      ref={containerRef} 
-      className="fixed bottom-12 left-12 z-40 pointer-events-none"
-      style={{
-        willChange: "opacity",
-        transform: "translateZ(0)", // Force GPU layer
-        backfaceVisibility: "hidden" as const,
-        WebkitBackfaceVisibility: "hidden",
-      }}
+    <div
+      ref={containerRef}
+      className="fixed inset-0 flex flex-col z-[45] pointer-events-none"
     >
-      <svg
-        ref={svgRef}
-        xmlns="http://www.w3.org/2000/svg"
-        viewBox="0 0 76.02 54.85"
-        className="w-56 md:w-80 lg:w-96"
-        style={{
-          opacity: 0,
-          transform: "rotate(5deg) translateZ(0)",
-          filter: "drop-shadow(2px 2px 4px rgba(0,0,0,0.7)) drop-shadow(4px 4px 10px rgba(0,0,0,0.4))",
-          WebkitTransform: "rotate(5deg) translateZ(0)",
-        }}
-      >
-        <defs>
-          <mask id="handwriting-mask" maskUnits="userSpaceOnUse">
-            {/* Pen-direction center-line paths — follow natural writing strokes.
-                strokeLinecap="butt" prevents cap-overhang dots appearing before animation. */}
-            {/* N: down left stroke, diagonal up-right, down right stroke */}
-            <path className="mask-path" fill="none" stroke="#fff" strokeWidth="14" strokeLinecap="butt" strokeLinejoin="round" d="M4,1 L1,25 L11,1 L9,25" />
-            {/* i: quick downstroke */}
-            <path className="mask-path" fill="none" stroke="#fff" strokeWidth="14" strokeLinecap="butt" strokeLinejoin="round" d="M19,5 L17,20" />
-            {/* c: top-right, curve down-left, slight return */}
-            <path className="mask-path" fill="none" stroke="#fff" strokeWidth="14" strokeLinecap="butt" strokeLinejoin="round" d="M34,5 L28,7 L26,11 L29,16" />
-            {/* e: middle-left, up-right, loop down and back */}
-            <path className="mask-path" fill="none" stroke="#fff" strokeWidth="14" strokeLinecap="butt" strokeLinejoin="round" d="M37,8 L44,4 L44,10 L39,15 L37,10" />
-            {/* R stem: top to bottom */}
-            <path className="mask-path" fill="none" stroke="#fff" strokeWidth="14" strokeLinecap="butt" strokeLinejoin="round" d="M10,29 L5,54" />
-            {/* R bowl: out right from top of stem, curve, return */}
-            <path className="mask-path" fill="none" stroke="#fff" strokeWidth="14" strokeLinecap="butt" strokeLinejoin="round" d="M10,30 L18,30 L19,35 L15,39" />
-            {/* R leg: diagonal down-right from bowl junction */}
-            <path className="mask-path" fill="none" stroke="#fff" strokeWidth="14" strokeLinecap="butt" strokeLinejoin="round" d="M12,43 L24,50" />
-            {/* i: quick downstroke */}
-            <path className="mask-path" fill="none" stroke="#fff" strokeWidth="14" strokeLinecap="butt" strokeLinejoin="round" d="M27,31 L26,46" />
-            {/* g: oval top then descender down */}
-            <path className="mask-path" fill="none" stroke="#fff" strokeWidth="14" strokeLinecap="butt" strokeLinejoin="round" d="M41,29 L37,31 L35,35 L39,37 L42,33 L42,41" />
-            {/* h tall stroke: top to bottom */}
-            <path className="mask-path" fill="none" stroke="#fff" strokeWidth="14" strokeLinecap="butt" strokeLinejoin="round" d="M51,24 L48,38" />
-            {/* h bump/arch: right from mid-stem */}
-            <path className="mask-path" fill="none" stroke="#fff" strokeWidth="14" strokeLinecap="butt" strokeLinejoin="round" d="M49,30 L54,28 L55,32 L53,38" />
-            {/* t vertical: top to bottom */}
-            <path className="mask-path" fill="none" stroke="#fff" strokeWidth="14" strokeLinecap="butt" strokeLinejoin="round" d="M60,21 L60,34" />
-            {/* t cross: quick horizontal */}
-            <path className="mask-path" fill="none" stroke="#fff" strokeWidth="14" strokeLinecap="butt" strokeLinejoin="round" d="M57,27 L63,26" />
-            {/* ? curve: starts at BOTTOM of hook, writes upward and around */}
-            <path className="mask-path" fill="none" stroke="#fff" strokeWidth="14" strokeLinecap="butt" strokeLinejoin="round" d="M69,25 L66,20 L66,14 L69,10 L74,12 L75,16 L72,21" />
-            {/* ? dot: short stroke, butt cap — strokeWidth covers the dot area */}
-            <path className="mask-path" fill="none" stroke="#fff" strokeWidth="14" strokeLinecap="butt" strokeLinejoin="round" d="M68,31 L70.5,33" />
-          </mask>
-        </defs>
-
-        {/* The actual filled text (revealed by the mask) - solid color for performance */}
-        <g mask="url(#handwriting-mask)">
-          <path fill="#b4c1d0" d="M8.28,0l.7.33.99,5.66,3.29,16.1c.17.81-.15,1.29-.96,1.45l-.31.06c-1.3.26-4.25-3.56-8.83-11.48l-.16.03c.3,4.08.64,7.03,1.01,8.82l.43,2.12c.33,1.63.04,2.53-.86,2.72-.81.17-1.38-.56-1.72-2.19l-.31-1.52C.38,13.17-.14,8.33.03,7.62s.61-1.15,1.32-1.3l.45-.09c.76.27,2.31,2.44,4.65,6.49l3.06,4.92.16-.03-1.18-5.77C7.17,4.19,7,.26,7.99.06l.3-.06Z"/>
-          <path fill="#b4c1d0" d="M20.7,4.89c.54-.03.83.12.9.43l.08.4c.09.44.76.51-2.44,1.94l-.51.31.04.19,1.53,8.12,2.22-1.28c.66-.85,3.33-.1,1.81,1.66l-7.05,3.81c-.63.54-1.68,1.02-2.23-.05l-.08-.4c-.13-.65.5-1.27,1.91-1.82l.13-.03.89-.75-.32-.96-1.14-7.37c-1.77-.93-2.31,3.17-4.08-.19.48-1.16,1.26-1.81,6.8-3.68l1.55-.32Z"/>
-          <path fill="#b4c1d0" d="M30.7,4l1.22-.25.85.55.14.7c.01.35-.71.99-2.16,1.91-1.68,1.84-2.6,3.61-2.75,5.29l-.14,1.13.03.17c.95.66,2.32.81,4.11.44l2.79-.57.43.28.14.7c-.13.75-1.79,1.58-4.97,2.47-3.06-.1-4.71-.49-4.97-1.17s-.44-1.25-.53-1.71c.26-3.19,1.44-5.99,3.57-8.38l2.23-1.55Z"/>
-          <path fill="#b4c1d0" d="M43.81.63c.76.18,1.22.58,1.35,1.23.35.86-1.56,2.37-5.73,4.55l-.14,2.18c2.27-1.13,3.96-1.81,5.08-2.04l.57.63.2.96c-.2.43-2.2,1.77-6,3.98l.23,1,1.61-.62,2.64-1.05c.85-.17,1.39.3,1.62,1.42.14.69-1.12,1.69-3.78,3.03-2.32.47-4.06-.17-5.23-1.94l-.1-.48c-.54-2.66-.47-4.76.24-6.33-.71-.18-1.13-.43-1.25-.75l-.25-1.21c.1-1.03,1.49-1.8,4.14-2.35l4.82-2.24Z"/>
-          <path fill="#b4c1d0" d="M10.73,28.81c2.83-.45,4.96-.25,6.42.61l1.08.69.67,1.18c.87,2.5.84,4.44-.11,5.81s-3.06,3.18-6.35,5.44c-1.08.38-1.42,1.13-1.03,2.27,6.3,1.32,10.34,2.44,12.13,3.39l.73.51.24.68c-.13.68-.41,1.1-.84,1.25l-12.6-2.66c-.15,4.13-.87,6.42-2.16,6.87l-1.11-.57-.06-.17c-.14-.39-.06-2.77.23-7.14-1.33-.67-2.09-1.29-2.3-1.87l-.18-.51c-.35-.99.52-2,2.6-3.02.48-.17.6-1.92.35-5.27-.15-1.73.17-2.73.95-3,.89.11,1.43.42,1.62.96l.59,5.34.16-.06c3.48-2.32,5.14-4.71,4.99-7.17l-.48-.35c-1.8-.76-3.37-.9-4.73-.43-5.02,1.98-7.36,3.49-6.99,4.54.09.27-.11.53-.63.8-1.86.27-2.86.18-3.02-.27l-.3-.85c-.31-.89,2.11-2.83,7.28-5.8l2.86-1.2Z"/>
-          <path fill="#b4c1d0" d="M27.77,30.51c.53-.1.84,0,.95.3l.13.38c.15.43.83.41-2.16,2.25l-.47.38.06.18,2.62,7.84,2.03-1.57c.54-.93,3.28-.55,2.01,1.4l-6.47,4.72c-.55.62-1.53,1.24-2.21.25l-.13-.38c-.22-.63.33-1.32,1.65-2.06l.13-.04.78-.86-.45-.91-2.12-7.15c-1.88-.68-1.86,3.45-4.07.36.32-1.21,1-1.97,6.24-4.57l1.49-.52Z"/>
-          <path fill="#b4c1d0" d="M37.95,28.62l.83-.29c.62-.22,1.31-.03,2.08.58l.35,1c-.09.66-.43,1.09-1.04,1.3l-1.29.08c-1.75,1.38-2.8,2.99-3.16,4.86l.12.89.06.17c1.87,1.63,3.82,1.14,5.85-1.5l-.17.06-2.22,1.16c-.58-.05-.94-.18-1.07-.38l-.23-.66c.21-1.07,1.83-2.14,4.87-3.2.51-.01.95.15,1.29.48l.23.66-.7,5.49c.32.92.15,1.49-.52,1.73l-.5.18c-.67-.14-1.11-.49-1.3-1.05l-.08-1.31-2,1.26c-2.56.9-4.62.18-6.18-2.15l-.06-.17c-.78-2.23.37-5.01,3.46-8.33l1.38-.85Z"/>
-          <path fill="#b4c1d0" d="M47.79,27.95l.65,3.01,3.23-1.13-.34-2.11c-.45-2.53-.51-3.85-.18-3.96l.72-.25c.62.1,1.14.46,1.58,1.06l.91,4.32c.62.03,1.01.17,1.15.4l.31.9c.11.31-.32.8-1.3,1.46.41,2.23.37,4.2-.15,5.9l-.73.25c-.57-.08-.91-.3-1.03-.66l-.79-4.55-.83.5-2.15.75c.44,1.27.21,2.89-.71,4.87l-.54.19-.97-.46c-.01-1.17-.57-4.13-1.69-8.87l-.81-1.73c-.27-.78.09-1.45,1.11-2.01,1.08-.38,1.94.33,2.56,2.12Z"/>
-          <path fill="#b4c1d0" d="M59.46,21.09c2-.7,3.12-.7,3.37,0,.28.81-.58,1.57-2.58,2.27l.23.9.43,1.22c1.58,5.45,1.74,8.4.5,8.84-.59.21-1.16-.31-1.75-1.54l-1.18-6.82-.41-1.35c-.83.37-1.34,1.11-1.52,2.22l-.47.16c-.58,0-1.09-.66-1.56-1.99l-.06-.18c.27-1.1,1.19-2.08,2.76-2.94l2.27-.77Z"/>
-          <path fill="#b4c1d0" d="M67.71,9.81c3.79-.13,6.43,1.21,7.94,4.01l.36,2.05c.05,1.5-2.14,3.55-6.57,6.13h-.15c.64,1.49.97,2.56.99,3.21-.12,1.28-.53,1.94-1.26,1.97-.79-.23-1.2-.62-1.22-1.15l.11-1.18c-.16-.87-.74-1.88-1.72-3.04-.02-.72,1.27-1.65,3.88-2.78l3.58-3.22c-.06-1.85-1.43-3.03-4.1-3.54l-1.92-.09c-2.24.67-3.39,1.49-3.46,2.48.24.7.88,1.62,1.9,2.76l-.4.57-.59.51c-1.3-.37-2.34-1.63-3.11-3.77v-.29c-.07-1.7,1.56-3.18,4.85-4.44l.88-.18ZM69.44,30.69c.7.42,1.06.89,1.08,1.43l.02.73c-.08.25-.55.66-1.43,1.24l-.88.03c-.88.03-1.34-.35-1.36-1.14v-.29c-.05-1.28.47-1.93,1.54-1.96l1.03-.03Z"/>
-        </g>
-      </svg>
+      <div className="flex-[0.4] md:flex-1" aria-hidden />
+      <div className="flex-[1.6] md:flex-1 flex items-center justify-center">
+        <div
+          className="flex flex-col items-center text-center"
+          style={{
+            fontFamily: "'Abject Failure', sans-serif",
+            fontWeight: 600,
+            color: "white",
+            filter: "drop-shadow(2px 3px 6px rgba(0,0,0,0.7))",
+            transform: "rotate(-3deg)",
+          }}
+        >
+          <span
+            ref={line1Ref}
+            className="block whitespace-nowrap"
+            style={{ fontSize: "clamp(4rem, 16vw, 6.5rem)" }}
+          >
+            No Words
+          </span>
+          <span
+            ref={line2Ref}
+            className="block mt-1 whitespace-nowrap"
+            style={{ fontSize: "clamp(2.5rem, 10vw, 4rem)" }}
+          >
+            printing studio
+          </span>
+        </div>
+      </div>
     </div>
   );
 }
