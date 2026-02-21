@@ -93,7 +93,7 @@ export default function LogoHero() {
           y: FINAL_OFFSET_TOP,
           xPercent: 0,
           yPercent: 0,
-          scale: 0.38,
+          scale: isMobile ? 0.25 : 0.38,
           transformOrigin: "0 0",
           ease: "none",
         }
