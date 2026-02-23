@@ -20,8 +20,8 @@ const kronaOne = Krona_One({
   subsets: ["latin"],
 });
 
-// Image used for link previews (iMessage, Facebook, etc.)
-const SHARE_IMAGE_PATH = "/logo_vectorized.png";
+// Image used for link previews (iMessage, Facebook, etc.) — must be logo, not page content
+const SHARE_IMAGE_PATH = "/opengraph-image.png";
 
 // Required for social crawlers: they need a single canonical absolute URL.
 // Set NEXT_PUBLIC_SITE_URL in production to your canonical URL (e.g. https://nowordsprintstudio.com).
